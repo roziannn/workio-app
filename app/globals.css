@@ -1,10 +1,5 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -15,12 +10,63 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground: #ecf0f6;
   }
+}
+
+:root {
+  --background: #ecf0f6;
+  --foreground: #171717;
+  --font-sans: "Poppins", sans-serif;
+  --font-mono: var(--geist-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+@layer base {
+  label {
+    @apply text-sm font-medium text-gray-700 block;
+  }
+}
+
+@layer components {
+  .input-primary {
+    @apply w-full px-4 py-2 rounded-3xl border border-gray-300 
+           bg-white text-gray-800 placeholder-gray-400
+           focus:outline-none focus:ring-2 focus:ring-[#FF0B55]/60 focus:border-[#FF0B55]
+           transition;
+  }
+  /* p {
+    @apply text-sm text-gray-400;
+  } */
+
+  .label-primary {
+    @apply block mb-1 text-sm font-medium text-gray-700;
+  }
+
+  .btn-primary {
+    @apply w-full py-2.5 rounded-3xl font-medium text-sm text-white transition;
+    background-color: #ff0b55;
+    box-shadow: 0 2px 6px rgba(255, 11, 85, 0.25);
+  }
+
+  .btn-primary:hover {
+    background-color: #e00a4b;
+    box-shadow: 0 4px 10px rgba(255, 11, 85, 0.35);
+  }
+
+  .btn-secondary {
+    @apply w-full py-2.5 rounded-3xl font-medium text-sm text-white transition;
+    background-color: #1b1b1b;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  }
+
+  .btn-secondary:hover {
+    background-color: #333333;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  }
 }
