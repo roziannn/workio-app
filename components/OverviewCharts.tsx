@@ -30,15 +30,34 @@ export default function OverviewCharts() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white p-6 rounded-xl shadow-sm">
+    <div className="flex flex-col lg:flex-row gap-6">
+      {/* Container untuk Pie Chart */}
+      <div className="flex-1 bg-white p-6 rounded-xl shadow-sm">
         <h2 className="text-lg font-semibold mb-4">Task Status</h2>
-        <Pie data={pieData} />
+        <Pie
+          data={pieData}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+          }}
+        />
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm">
+      {/* Container untuk Bar Chart */}
+      <div className="flex-1 bg-white p-6 rounded-xl shadow-sm">
         <h2 className="text-lg font-semibold mb-4">Tasks per Team Member</h2>
-        <Bar data={barData} options={{ responsive: true, plugins: { legend: { position: "top" } } }} />
+        <Bar
+          data={barData}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "top",
+              },
+            },
+          }}
+        />
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ export default function Sidebar() {
     { href: "/teams", label: "Teams", icon: Users },
     { href: "/tasks", label: "Tasks", icon: CheckSquare },
     { href: "/projects", label: "Projects", icon: Folder },
-    { href: "/notifications", label: "Notifications", icon: Bell },
+    // { href: "/notifications", label: "Notifications", icon: Bell },
     { href: "/reports", label: "Reports", icon: BarChart2 },
   ];
 
@@ -51,15 +51,15 @@ export default function Sidebar() {
       {/* DESKTOP SIDEBAR */}
       <aside className="hidden md:flex md:flex-col md:w-60 md:h-screen md:sticky md:top-0 bg-white p-5">
         <div className="flex justify-left pb-6">
-          <Image src="/logo.png" alt="Workio Logo" width={80} height={100} priority />
+          <Image src="/logo.png" alt="Workio Logo" width={100} height={120} priority />
         </div>
 
-        <nav className="text-sm space-y-12 flex-1 overflow-y-auto">
+        <nav className="text-sm space-y-8 flex-1 overflow-y-auto">
           <div>
             <p className="uppercase text-gray-400 text-xs mb-3">General</p>
             <div className="space-y-4">
               {links.map(({ href, label, icon: Icon }) => (
-                <Link key={href} href={href} className={`flex items-center gap-2 px-4 py-2 rounded-3xl font-medium transition ${pathname === href ? "btn-primary" : "hover:bg-gray-100 hover:text-red-500"}`}>
+                <Link key={href} href={href} className={`flex items-center gap-2 px-4 py-3 rounded-3xl font-medium transition ${pathname === href ? "btn-primary" : "hover:bg-gray-100 hover:text-red-500"}`}>
                   <Icon size={18} /> {label}
                 </Link>
               ))}
@@ -70,7 +70,7 @@ export default function Sidebar() {
             <p className="uppercase text-gray-400 text-xs mb-3">Others</p>
             <div className="space-y-4">
               {others.map(({ href, label, icon: Icon }) => (
-                <Link key={href} href={href} className={`flex items-center gap-2 px-4 py-2 rounded-3xl font-medium transition ${pathname === href ? "btn-primary" : "hover:bg-gray-100 hover:text-red-500"}`}>
+                <Link key={href} href={href} className={`flex items-center gap-2 px-4 py-3 rounded-3xl font-medium transition ${pathname === href ? "btn-primary" : "hover:bg-gray-100 hover:text-red-500"}`}>
                   <Icon size={18} /> {label}
                 </Link>
               ))}
