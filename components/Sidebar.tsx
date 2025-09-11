@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Home, Users, CheckSquare, Folder, Bell, BarChart2, User, Settings, LogOut, Menu, X } from "lucide-react";
+import { Home, Users, CheckSquare, Folder, BarChart2, User, Settings, LogOut, Menu, X } from "lucide-react";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
