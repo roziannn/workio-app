@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Eye, Pencil, CheckCircle, XCircle } from "lucide-react";
+import Badge from "@/components/Badge";
 
 export default function TeamsPage() {
   const people = [
@@ -11,6 +12,11 @@ export default function TeamsPage() {
     { id: 4, name: "Diana Prince", email: "diana@example.com", role: "QA", subRole: "Engineer", registeredAt: "2024-03-05", status: "Inactive" },
     { id: 5, name: "Ethan Hunt", email: "ethan@example.com", role: "Marketing", subRole: "Specialist", registeredAt: "2024-03-15", status: "Active" },
   ];
+
+  const personStatusStyles: Record<string, string> = {
+    Active: "bg-green-100 text-green-700 border-green-500",
+    Inactive: "bg-red-100 text-red-700 border-red-500",
+  };
 
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
@@ -66,10 +72,9 @@ export default function TeamsPage() {
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${person.status === "Active" ? "bg-green-100 text-green-700 border-green-500" : "bg-red-100 text-red-700 border-red-500"}`}>
-                      {person.status === "Active" ? <CheckCircle className="h-3 w-3 mr-1" /> : <XCircle className="h-3 w-3 mr-1" />}
+                    <Badge colorClass={personStatusStyles[person.status]} icon={person.status === "Active" ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
                       {person.status}
-                    </span>
+                    </Badge>
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-right flex justify-end space-x-2">
