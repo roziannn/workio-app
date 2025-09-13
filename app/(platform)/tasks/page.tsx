@@ -38,13 +38,13 @@ export default function TasksPage() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-      <div className="md:col-span-12 bg-white p-4 sm:p-6 rounded-3xl flex flex-col space-y-4">
-        <DataListHeader title="Tasks" total={filteredTasks.length} filterOptions={filterOptions} selectedFilter={statusFilter} onFilterChange={setStatusFilter} />
+      <div className="md:col-span-12 bg-white p-4 sm:p-6 rounded-3xl flex flex-col space-y-1">
+        <DataListHeader title="All Tasks" total={filteredTasks.length} filterOptions={filterOptions} selectedFilter={statusFilter} onFilterChange={setStatusFilter} />
 
         {paginatedTasks.map((task) => (
           <div key={task.id} className="p-4 sm:p-6 hover:bg-slate-50 transition">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-base sm:text-lg font-semibold text-slate-800 hover:text-slate-900 cursor-pointer">{task.title}</h2>
+              <h2 className="text-base font-semibold text-slate-800 hover:text-slate-900 cursor-pointer">{task.title}</h2>
               <div className="flex space-x-2">
                 <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700 flex items-center justify-center">
                   <LucideEye size={16} />

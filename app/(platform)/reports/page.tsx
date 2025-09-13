@@ -1,20 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, Pencil, CheckCircle, XCircle } from "lucide-react";
+import { Pencil, CheckCircle, XCircle } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 
-export default function TeamsPage() {
-  const people = [
-    { id: 1, name: "Alice Johnson", email: "alice@example.com", role: "Manager", subRole: "Frontend Developer", registeredAt: "2024-01-12", status: "Active" },
-    { id: 2, name: "Bob Smith", email: "bob@example.com", role: "Staff", subRole: "Backend Developer", registeredAt: "2024-02-08", status: "Inactive" },
-    { id: 3, name: "Charlie Brown", email: "charlie@example.com", role: "Designer", subRole: "UI/UX", registeredAt: "2024-02-20", status: "Active" },
-    { id: 4, name: "Diana Prince", email: "diana@example.com", role: "QA", subRole: "Engineer", registeredAt: "2024-03-05", status: "Inactive" },
-    { id: 5, name: "Ethan Hunt", email: "ethan@example.com", role: "Marketing", subRole: "Specialist", registeredAt: "2024-03-15", status: "Active" },
+interface UserAccount {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: "Active" | "Inactive";
+}
+
+export default function AccountsPage() {
+  const users: UserAccount[] = [
+    { id: 1, name: "Alice Johnson", email: "alice@example.com", role: "Admin", status: "Active" },
+    { id: 2, name: "Bob Smith", email: "bob@example.com", role: "Staff", status: "Inactive" },
+    { id: 3, name: "Charlie Brown", email: "charlie@example.com", role: "Editor", status: "Active" },
+    { id: 4, name: "Diana Prince", email: "diana@example.com", role: "Staff", status: "Inactive" },
+    { id: 5, name: "Ethan Hunt", email: "ethan@example.com", role: "Admin", status: "Active" },
   ];
 
-  const personStatusStyles: Record<string, string> = {
+  const statusStyles: Record<UserAccount["status"], string> = {
     Active: "bg-green-100 text-green-700 border-green-500",
     Inactive: "bg-red-100 text-red-700 border-red-500",
   };
@@ -23,74 +31,79 @@ export default function TeamsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("All");
 
-  const filteredPeople = statusFilter === "All" ? people : people.filter((p) => p.status === statusFilter);
-  const totalPages = Math.ceil(filteredPeople.length / itemsPerPage);
+  const filterOptions = ["All", "Active", "Inactive"];
+  const filteredUsers = statusFilter === "All" ? users : users.filter((u) => u.status === statusFilter);
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentPeople = filteredPeople.slice(indexOfFirst, indexOfLast);
-
-  const filterOptions = ["All", "Active", "Inactive"];
+  const currentUsers = filteredUsers.slice(indexOfFirst, indexOfLast);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       <div className="md:col-span-12 bg-white p-4 sm:p-6 rounded-3xl flex flex-col">
-        {/* Gunakan DataListHeader */}
+        {/* Header dengan filter */}
         <DataListHeader
-          title="All People"
-          total={filteredPeople.length}
+          title="User Accounts"
+          total={filteredUsers.length}
           filterOptions={filterOptions}
           selectedFilter={statusFilter}
           onFilterChange={(value) => {
             setStatusFilter(value);
             setCurrentPage(1);
           }}
-          onAddNew={() => console.log("Add new clicked")}
-          onImport={() => console.log("Import clicked")}
+          onAddNew={() => console.log("Add new user clicked")}
         />
 
-        {/* People list */}
-        <div className="overflow-x-auto">
+        {/* Table users */}
+        <div className="overflow-x-auto mt-4">
           <table className="min-w-full">
             <thead>
               <tr>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Role</th>
                 <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {currentPeople.map((person) => (
-                <tr key={person.id} className="bg-white hover:bg-gray-50 rounded-2xl mb-2">
+              {currentUsers.map((user) => (
+                <tr key={user.id} className="bg-white hover:bg-gray-50 rounded-2xl mb-2">
                   <td className="px-6 py-4 whitespace-nowrap flex items-center space-x-4">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF0B55] to-[#FF8225] flex items-center justify-center text-white font-bold">{person.name.charAt(0)}</div>
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF0B55] to-[#FF8225] flex items-center justify-center text-white font-bold">{user.name.charAt(0)}</div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-800">{person.name}</p>
-                      <p className="text-xs text-gray-500">{person.email}</p>
+                      <p className="text-sm font-semibold text-gray-800">{user.name}</p>
                     </div>
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <p className="text-sm font-semibold text-gray-800">{person.role}</p>
-                    <p className="text-xs text-gray-500">{person.subRole}</p>
+                    <p className="text-sm text-gray-700">{user.email}</p>
+                  </td>
+
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <p className="text-sm text-gray-700">{user.role}</p>
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <Badge colorClass={personStatusStyles[person.status]} icon={person.status === "Active" ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
-                      {person.status}
+                    <Badge colorClass={statusStyles[user.status]} icon={user.status === "Active" ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
+                      {user.status}
                     </Badge>
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-right flex justify-end space-x-2">
-                    <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
-                      <Eye size={16} />
-                    </button>
                     <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
                       <Pencil size={16} />
                     </button>
                   </td>
                 </tr>
               ))}
+              {currentUsers.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
+                    No users found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
