@@ -32,6 +32,7 @@ export default function AccountsPage() {
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("All");
+
   const filterOptions = ["All", "Active", "Inactive"];
   const filteredUsers = statusFilter === "All" ? users : users.filter((u) => u.status === statusFilter);
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
@@ -85,8 +86,20 @@ export default function AccountsPage() {
         status,
       };
       setUsers([newUser, ...users]);
+
+      window.dispatchEvent(
+        new CustomEvent("show-notification", {
+          detail: { type: "success", message: "User added successfully!" },
+        })
+      );
     } else if (modalMode === "edit" && editingUserId !== null) {
       setUsers(users.map((u) => (u.id === editingUserId ? { ...u, name, email, role, status } : u)));
+
+      window.dispatchEvent(
+        new CustomEvent("show-notification", {
+          detail: { type: "success", message: "User updated successfully!" },
+        })
+      );
     }
 
     resetForm();

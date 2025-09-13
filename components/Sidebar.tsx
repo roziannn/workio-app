@@ -63,7 +63,7 @@ export default function Sidebar() {
           {isSubOpen && (
             <div className="pl-8 mt-2 space-y-2">
               {item.children!.map((child) => (
-                <Link key={child.href} href={child.href!} className={`flex items-center gap-2 px-4 py-3 rounded-3xl font-medium transition ${pathname === child.href ? "bg-gray-100 text-red-500" : "hover:bg-gray-50"}`}>
+                <Link key={child.href} href={child.href!} className={`flex items-center gap-2 px-4 py-3 rounded-3xl font-medium transition ${pathname === child.href ? "btn-primary" : "hover:bg-gray-50 hover:text-red-500"}`}>
                   <child.icon size={16} /> {child.label}
                 </Link>
               ))}

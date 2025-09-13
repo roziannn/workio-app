@@ -1,5 +1,6 @@
 "use client";
 
+import NotificationManager from "@/components/NotificationCustom";
 import Sidebar from "@/components/Sidebar";
 import { User, ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -52,6 +53,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
         </header>
 
         <main className="flex-1 px-6">{children}</main>
+        <NotificationManager />
       </div>
     </div>
   );
