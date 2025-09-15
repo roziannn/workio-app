@@ -8,6 +8,7 @@ import ToggleSwitch from "@/components/Toggle";
 import InputField from "@/components/InputField";
 import Pagination from "@/components/Pagination";
 import AccountTable from "../account/account-table";
+import { notify } from "@/components/NotifiactionManager";
 
 interface UserAccount {
   id: number;
@@ -86,20 +87,10 @@ export default function AccountsPage() {
         status,
       };
       setUsers([newUser, ...users]);
-
-      window.dispatchEvent(
-        new CustomEvent("show-notification", {
-          detail: { type: "success", message: "User added successfully!" },
-        })
-      );
+      notify("success", "Account added successfully!");
     } else if (modalMode === "edit" && editingUserId !== null) {
       setUsers(users.map((u) => (u.id === editingUserId ? { ...u, name, email, role, status } : u)));
-
-      window.dispatchEvent(
-        new CustomEvent("show-notification", {
-          detail: { type: "success", message: "User updated successfully!" },
-        })
-      );
+      notify("success", "Account updated successfully!");
     }
 
     resetForm();

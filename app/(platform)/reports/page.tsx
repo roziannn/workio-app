@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, CheckCircle, XCircle } from "lucide-react";
+import { Pencil, CheckCircle2, XCircle } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 
@@ -85,7 +85,7 @@ export default function AccountsPage() {
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <Badge colorClass={statusStyles[user.status]} icon={user.status === "Active" ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
+                    <Badge colorClass={statusStyles[user.status]} icon={user.status === "Active" ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
                       {user.status}
                     </Badge>
                   </td>

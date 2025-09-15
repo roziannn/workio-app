@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Flag, User, Trash2, Pencil, CheckCircle, Clock, LucideEye } from "lucide-react";
+import { Flag, User, Trash2, Pencil, CheckCircle2, Clock, LucideEye } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import { formatDate } from "@/utils/dateHelper";
 import Badge from "@/components/Badge";
@@ -67,7 +67,7 @@ export default function TasksPage() {
               <Badge colorClass="text-red-500 border-none bg-transparent" icon={<Clock size={14} />}>
                 {formatDate(task.dueDate)}
               </Badge>
-              <Badge colorClass={statusStyles[task.status]} icon={task.status === "Completed" ? <CheckCircle size={14} /> : <Clock size={14} />}>
+              <Badge colorClass={statusStyles[task.status]} icon={task.status === "Completed" ? <CheckCircle2 size={14} /> : <Clock size={14} />}>
                 {task.status}
               </Badge>
               <Badge colorClass="text-gray-700 border-none bg-transparent" icon={<User size={14} />}>

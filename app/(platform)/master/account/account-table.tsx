@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, CheckCircle, XCircle } from "lucide-react";
+import { Pencil, CheckCircle2, XCircle } from "lucide-react";
 import Badge from "@/components/Badge";
 
 export interface UserAccount {
@@ -49,7 +49,7 @@ export default function AccountTable({ users, statusStyles, onEdit }: AccountTab
               </td>
 
               <td className="px-6 py-4 whitespace-nowrap text-center">
-                <Badge colorClass={statusStyles[user.status]} icon={user.status === "Active" ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
+                <Badge colorClass={statusStyles[user.status]} icon={user.status === "Active" ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
                   {user.status}
                 </Badge>
               </td>

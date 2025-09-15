@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Eye, Pencil, CheckCircle, XCircle, Monitor, Smartphone, Wrench } from "lucide-react";
+import { Eye, Pencil, CheckCircle2, XCircle, Monitor, Smartphone, Wrench } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 import { formatDate } from "@/utils/dateHelper";
@@ -153,7 +153,7 @@ export default function ProjectsPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <Badge
                       colorClass={statusStyles[project.status]}
-                      icon={project.status === "Active" ? <CheckCircle className="h-3 w-3" /> : project.status === "Inactive" ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
+                      icon={project.status === "Active" ? <CheckCircle2 className="h-3 w-3" /> : project.status === "Inactive" ? <XCircle className="h-3 w-3" /> : <CheckCircle2 className="h-3 w-3" />}
                     >
                       {project.status}
                     </Badge>

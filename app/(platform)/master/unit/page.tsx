@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, CheckCircle, XCircle } from "lucide-react";
+import { Pencil, CheckCircle2, XCircle } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 import Modal from "@/components/Modal";
 import InputField from "@/components/InputField";
 import ToggleSwitch from "@/components/Toggle";
 import Pagination from "@/components/Pagination";
+import { notify } from "@/components/NotifiactionManager";
 
 interface Unit {
   id: number;
@@ -77,8 +78,10 @@ export default function UnitPage() {
         status,
       };
       setUnitList([newUnit, ...unitList]);
+      notify("success", "Unit added successfully!");
     } else if (modalMode === "edit" && editingUnitId !== null) {
       setUnitList(unitList.map((u) => (u.id === editingUnitId ? { ...u, name, status } : u)));
+      notify("success", "Unit updated successfully!");
     }
 
     resetForm();
@@ -127,7 +130,7 @@ export default function UnitPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">{unit.name}</td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <Badge colorClass={statusStyles[unit.status]} icon={unit.status === "Active" ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
+                    <Badge colorClass={statusStyles[unit.status]} icon={unit.status === "Active" ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
                       {unit.status}
                     </Badge>
                   </td>

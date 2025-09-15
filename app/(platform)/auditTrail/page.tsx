@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle, XCircle, Download, X } from "lucide-react";
+import { Download, X } from "lucide-react";
 import { formatDateTime } from "@/utils/dateHelper";
-import Badge from "@/components/Badge";
 
 interface AuditTrail {
   id: number;

@@ -1,6 +1,6 @@
 "use client";
 
-import NotificationManager from "@/components/NotificationCustom";
+import NotificationManager from "@/components/NotifiactionManager";
 import Sidebar from "@/components/Sidebar";
 import { User, ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -9,10 +9,10 @@ import { usePathname } from "next/navigation";
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  // Split URL jadi array ["overview", "platform", "detail"]
+  // split URL jadi array ["overview", "platform", "detail"]
   const segments = pathname.split("/").filter((segment) => segment !== "");
 
-  // Format segment biar readable
+  // format segment biar readable
   const formatSegment = (segment: string) => segment.charAt(0).toUpperCase() + segment.slice(1);
 
   return (
@@ -52,8 +52,10 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
           </div>
         </header>
 
-        <main className="flex-1 px-6">{children}</main>
-        <NotificationManager />
+        <main className="flex-1 px-6">
+          {children}
+          <NotificationManager />
+        </main>
       </div>
     </div>
   );

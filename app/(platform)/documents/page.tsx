@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, CheckCircle, XCircle, FileText, Clock } from "lucide-react";
+import { Eye, CheckCircle2, XCircle, FileText, Clock } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 import { formatDate } from "@/utils/dateHelper";
@@ -81,7 +81,7 @@ export default function DocumentApprovalPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.owner}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatDate(doc.submittedDate)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <Badge colorClass={statusStyles[doc.status]} icon={doc.status === "Approved" ? <CheckCircle className="h-3 w-3" /> : doc.status === "Rejected" ? <XCircle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}>
+                    <Badge colorClass={statusStyles[doc.status]} icon={doc.status === "Approved" ? <CheckCircle2 className="h-3 w-3" /> : doc.status === "Rejected" ? <XCircle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}>
                       {doc.status}
                     </Badge>
                   </td>

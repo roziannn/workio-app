@@ -8,6 +8,7 @@ import InputField from "@/components/InputField";
 import InputLabel from "@/components/Label";
 import ToggleSwitch from "@/components/Toggle";
 import CategoryTable from "../project/project-table";
+import { notify } from "@/components/NotifiactionManager";
 
 interface Category {
   id: number;
@@ -84,8 +85,10 @@ export default function ProjectCategoryPage() {
         icon: validIcon,
       };
       setCategoryList([newCategory, ...categoryList]);
+      notify("success", "Project Category added successfully!");
     } else if (modalMode === "edit" && editingCategoryId !== null) {
       setCategoryList(categoryList.map((c) => (c.id === editingCategoryId ? { ...c, name, status, icon: validIcon } : c)));
+      notify("success", "Project Category updated successfully!");
     }
 
     resetForm();

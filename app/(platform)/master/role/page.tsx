@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, CheckCircle, XCircle } from "lucide-react";
+import { Pencil, CheckCircle2, XCircle } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 import Modal from "@/components/Modal";
 import InputField from "@/components/InputField";
 import ToggleSwitch from "@/components/Toggle";
 import Pagination from "@/components/Pagination"; // 🔥 import Pagination component
+import { notify } from "@/components/NotifiactionManager";
 
 interface Role {
   id: number;
@@ -78,8 +79,10 @@ export default function RolePage() {
         status,
       };
       setRoleList([newRole, ...roleList]);
+      notify("success", "Role added successfully!");
     } else if (modalMode === "edit" && editingRoleId !== null) {
       setRoleList(roleList.map((r) => (r.id === editingRoleId ? { ...r, name, status } : r)));
+      notify("success", "Role updated successfully!");
     }
 
     resetForm();
@@ -128,7 +131,7 @@ export default function RolePage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">{role.name}</td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <Badge colorClass={statusStyles[role.status]} icon={role.status === "Active" ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
+                    <Badge colorClass={statusStyles[role.status]} icon={role.status === "Active" ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
                       {role.status}
                     </Badge>
                   </td>

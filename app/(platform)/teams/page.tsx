@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, Pencil, CheckCircle, XCircle } from "lucide-react";
+import { Eye, Pencil, CheckCircle2, XCircle } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 
@@ -76,7 +76,7 @@ export default function TeamsPage() {
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <Badge colorClass={personStatusStyles[person.status]} icon={person.status === "Active" ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
+                    <Badge colorClass={personStatusStyles[person.status]} icon={person.status === "Active" ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
                       {person.status}
                     </Badge>
                   </td>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, CheckCircle, XCircle } from "lucide-react";
+import { Pencil, CheckCircle2, XCircle } from "lucide-react";
 import Badge from "@/components/Badge";
 
 export interface Category {
@@ -34,7 +34,7 @@ export default function CategoryTable({ categories, statusStyles, onEdit }: Cate
               <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">{category.name}</td>
 
               <td className="px-6 py-4 whitespace-nowrap text-center">
-                <Badge colorClass={statusStyles[category.status]} icon={category.status === "Active" ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
+                <Badge colorClass={statusStyles[category.status]} icon={category.status === "Active" ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
                   {category.status}
                 </Badge>
               </td>

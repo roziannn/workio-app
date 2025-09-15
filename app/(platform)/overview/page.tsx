@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Line, Bar } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, PointElement, LineElement } from "chart.js";
-import { FolderOpen, Calendar, CheckCircle, CalendarClock } from "lucide-react";
+import { FolderOpen, Calendar, CheckCircle2, CalendarClock } from "lucide-react";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, PointElement, LineElement);
 
@@ -92,7 +92,7 @@ export default function OverviewPage() {
         {/* Task Productivity Line */}
         <div className="lg:col-span-8 bg-white p-4 sm:p-6 rounded-3xl h-[250px] sm:h-[300px]">
           <h2 className="text-sm sm:text-md font-semibold text-slate-600 mb-4 flex items-center space-x-2">
-            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-[#FF0B55]" />
+            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-[#FF0B55]" />
             <span>Task Productivity (Last 6 Months)</span>
           </h2>
           <Line
