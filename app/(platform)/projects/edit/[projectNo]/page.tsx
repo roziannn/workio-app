@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { CheckCircle2, Flag, Monitor, Smartphone, Wrench, Search } from "lucide-react";
 import Badge from "@/components/Badge";
 import InputField from "@/components/InputField";
 import { notify } from "@/components/NotifiactionManager";
 import { formatRupiah } from "@/utils/currency";
-import { generateProjectNo } from "@/utils/projectNo";
 
 type Category = "Web App" | "Mobile App" | "Internal Tool";
 type Priority = "High" | "Medium" | "Low";
@@ -18,15 +17,48 @@ const categories = [
   { id: "Internal Tool", name: "Internal Tool", icon: <Wrench size={16} className="text-orange-500" /> },
 ];
 
-export default function CreateProjectPage() {
-  const router = useRouter();
+const mockProjects = [
+  {
+    projectNo: "PRJ-WEB-202509-001",
+    name: "Customer Portal Revamp",
+    description: "Redesigning and rebuilding the user-facing customer portal with new features.",
+    owner: "Alice Johnson",
+    category: "Web App",
+    startDate: "2024-01-12",
+    endDate: "2024-03-12",
+    status: "Active",
+    client: "Global Solutions",
+    budget: 50000,
+    progress: 75,
+    priority: "High",
+  },
+  {
+    projectNo: "PRJ-MOB-202509-001",
+    name: "E-Commerce Mobile Shop",
+    description: "Developing a new mobile application for our e-commerce platform.",
+    owner: "Bob Smith",
+    category: "Mobile App",
+    startDate: "2024-02-01",
+    endDate: "2024-04-15",
+    status: "Inactive",
+    client: "Retail Innovations",
+    budget: 75000,
+    progress: 20,
+    priority: "Medium",
+  },
+];
 
-  const [projectNo, setProjectNo] = useState("");
+export default function EditProjectPage() {
+  const router = useRouter();
+  const params = useParams();
+  const projectNo = params.projectNo as string;
+
+  const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [client, setClient] = useState("");
   const [priority, setPriority] = useState<Priority>("Medium");
-  const [budget, setBudget] = useState("");
+  const [budget, setBudget] = useState<number>(0);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [category, setCategory] = useState<Category | null>(null);
@@ -39,13 +71,26 @@ export default function CreateProjectPage() {
     Low: "bg-green-100 text-green-700 border-green-500",
   };
 
-  // generate projectNo whenever category changes
   useEffect(() => {
-    if (category) {
-      const newProjectNo = generateProjectNo(category, 1);
-      setProjectNo(newProjectNo);
-    }
-  }, [category]);
+    setIsLoading(true);
+    setTimeout(() => {
+      const project = mockProjects.find((p) => p.projectNo === projectNo);
+      if (project) {
+        setName(project.name);
+        setDescription(project.description);
+        setClient(project.client);
+        setPriority(project.priority as Priority);
+        setBudget(project.budget);
+        setStartDate(project.startDate);
+        setEndDate(project.endDate);
+        setCategory(project.category as Category);
+      } else {
+        notify("error", "Project not found.");
+        router.push("/projects");
+      }
+      setIsLoading(false);
+    }, 500);
+  }, [projectNo, router]);
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
@@ -63,22 +108,42 @@ export default function CreateProjectPage() {
       notify("error", "Please fill in all required fields.");
       return;
     }
-
-    notify("success", "Project created successfully!");
+    const updatedProject = {
+      projectNo,
+      name,
+      description,
+      client,
+      category,
+      priority,
+      budget,
+      startDate,
+      endDate,
+    };
+    console.log("Update Project:", updatedProject);
+    notify("success", "Project updated successfully!");
     router.push("/projects");
   };
 
   const filteredCategories = categories.filter((c) => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-96">
+        <div className="flex flex-col items-center space-y-4 backdrop-blur-md animate-fadeIn">
+          <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-lg font-medium text-gray-700 animate-pulse">Loading data...</p>
+        </div>
+      </div>
+    );
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      {/* Left: Create Project Form */}
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl space-y-6">
-        <h2 className="text-xl font-semibold mb-1">New Project</h2>
-        <p className="text-sm text-gray-500 mb-6">Fill in the details for your new project.</p>
+        <h2 className="text-xl font-semibold mb-1">Edit Project</h2>
+        <p className="text-sm text-gray-500 mb-6">Update the details for your project.</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <InputField label="Project Number" value={projectNo} onChange={() => {}} placeholder="" type="text" error={formErrors.projectNo} readonly />
+          <InputField label="Project Number" value={projectNo} onChange={() => {}} type="text" readonly />
 
           <InputField
             label="Project Name"
@@ -101,7 +166,7 @@ export default function CreateProjectPage() {
               }}
               rows={3}
               placeholder="Short description..."
-              className={`mt-1 w-full text-sm border px-3 py-2 rounded-lg focus:outline-none ${formErrors.description ? "border-red-500" : "border-gray-300"}`}
+              className={`mt-1 w-full text-sm border px-3 py-2 rounded-lg focus:outline-none focus:border-red-500 ${formErrors.description ? "border-red-500" : "border-gray-300"}`}
             />
             {formErrors.description && <p className="text-red-500 text-xs mt-1">{formErrors.description}</p>}
           </div>
@@ -117,7 +182,18 @@ export default function CreateProjectPage() {
             error={formErrors.client}
           />
 
-          <InputField label="Budget" type="text" value={formatRupiah(budget)} onChange={(val) => setBudget(val.replace(/[^0-9]/g, ""))} placeholder="Rp 0" error={formErrors.budget} />
+          <InputField
+            label="Budget"
+            type="text"
+            value={formatRupiah(budget)}
+            onChange={(val) => {
+              const raw = parseInt(val.replace(/[^0-9]/g, ""), 10) || 0;
+              setBudget(raw);
+              setFormErrors((prev) => ({ ...prev, budget: "" }));
+            }}
+            placeholder="Rp 0"
+            error={formErrors.budget}
+          />
 
           <div className="grid grid-cols-2 gap-4 mb-2">
             <InputField label="Start Date" type="date" value={startDate} onChange={setStartDate} error={formErrors.startDate} />
@@ -153,12 +229,11 @@ export default function CreateProjectPage() {
           </div>
 
           <button type="submit" className="btn-primary w-full">
-            Save Project
+            Save Changes
           </button>
         </form>
       </div>
 
-      {/* Right: Select Category */}
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl">
         <h3 className="text-xl font-semibold mb-1">Select Category</h3>
         <p className="text-sm text-gray-500 mb-7">Choose the most suitable category for this project.</p>

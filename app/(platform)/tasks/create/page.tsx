@@ -141,8 +141,8 @@ export default function NewTaskPage() {
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       {/* Left: New Task Form */}
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl space-y-6">
-        <h2 className="text-2xl font-semibold mb-2">New Task</h2>
-        <p className="text-gray-500 mb-6">Create a new task and assign it to a team member.</p>
+        <h2 className="text-xl font-semibold mb-1">New Task</h2>
+        <p className="text-sm text-gray-500 mb-6">Create a new task and assign it to a team member.</p>
         <form onSubmit={handleSubmit} className="space-y-6">
           <InputField label="Task Name" value={taskName} onChange={setTaskName} placeholder="e.g., Deploy new API endpoint" error={formErrors.taskName} />
 
@@ -245,7 +245,7 @@ export default function NewTaskPage() {
       {/* Right: Add to Project Form */}
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl">
         <h3 className="text-xl font-semibold mb-2">Add Task to Project</h3>
-        <p className="text-gray-500 mb-7">Select a project to add this new task to.</p>
+        <p className="text-sm text-gray-500 mb-5">Select a project to add this new task to.</p>
         <label className="mb-1">Search</label>
         <div className="relative">
           <input

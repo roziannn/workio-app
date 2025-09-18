@@ -1,6 +1,8 @@
 // ProjectsPage.tsx
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 import { Eye, Pencil, CheckCircle2, XCircle, Monitor, Smartphone, Wrench, Flag } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
@@ -9,6 +11,7 @@ import Pagination from "@/components/Pagination";
 
 interface Project {
   id: number;
+  projectNo: string;
   name: string;
   description: string;
   owner: string;
@@ -23,9 +26,11 @@ interface Project {
 }
 
 export default function ProjectsPage() {
+  const router = useRouter();
   const projects: Project[] = [
     {
       id: 1,
+      projectNo: "PRJ-WEB-202509-001",
       name: "Customer Portal Revamp",
       description: "Redesigning and rebuilding the user-facing customer portal with new features.",
       owner: "Alice Johnson",
@@ -34,12 +39,13 @@ export default function ProjectsPage() {
       endDate: "2024-03-12",
       status: "Active",
       client: "Global Solutions",
-      budget: 50000,
+      budget: 5000000,
       progress: 75,
       priority: "High",
     },
     {
       id: 2,
+      projectNo: "PRJ-MOB-202509-001",
       name: "E-Commerce Mobile Shop",
       description: "Developing a new mobile application for our e-commerce platform.",
       owner: "Bob Smith",
@@ -48,12 +54,13 @@ export default function ProjectsPage() {
       endDate: "2024-04-15",
       status: "Inactive",
       client: "Retail Innovations",
-      budget: 75000,
+      budget: 7550000,
       progress: 20,
       priority: "Medium",
     },
     {
       id: 3,
+      projectNo: "PRJ-MOB-202509-002",
       name: "Spring Marketing Campaign",
       description: "A new campaign to promote our spring product line through mobile channels.",
       owner: "Charlie Brown",
@@ -62,12 +69,13 @@ export default function ProjectsPage() {
       endDate: "2024-03-30",
       status: "Completed",
       client: "Internal Marketing",
-      budget: 15000,
+      budget: 1500000,
       progress: 100,
       priority: "Low",
     },
     {
       id: 4,
+      projectNo: "PRJ-WEB-202509-002",
       name: "Payment Gateway API",
       description: "Building a secure and scalable API for all payment transactions.",
       owner: "Diana Prince",
@@ -76,12 +84,13 @@ export default function ProjectsPage() {
       endDate: "2024-06-10",
       status: "Active",
       client: "FinTech Partners",
-      budget: 90000,
+      budget: 9800000,
       progress: 50,
       priority: "High",
     },
     {
       id: 5,
+      projectNo: "PRJ-INT-202509-001",
       name: "Design System Toolkit",
       description: "Creating a comprehensive design system for consistent UI/UX across all products.",
       owner: "Ethan Hunt",
@@ -90,7 +99,7 @@ export default function ProjectsPage() {
       endDate: "2024-06-01",
       status: "Inactive",
       client: "Internal R&D",
-      budget: 20000,
+      budget: 10500000,
       progress: 10,
       priority: "Low",
     },
@@ -122,23 +131,35 @@ export default function ProjectsPage() {
   const indexOfFirst = indexOfLast - itemsPerPage;
   const currentProjects = filteredProjects.slice(indexOfFirst, indexOfLast);
 
+  const handleAddNewClick = () => {
+    router.push("/projects/create");
+  };
+
+  const handleDetailClick = (projectNo: string) => {
+    router.push(`/projects/detail/${projectNo}`);
+  };
+
+  const handleEditClick = (projectNo: string) => {
+    router.push(`/projects/edit/${projectNo}`);
+  };
+
   const getCategoryIcon = (category: Project["category"]) => {
     switch (category) {
       case "Web App":
         return (
-          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-100">
+          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100">
             <Monitor className="h-5 w-5 text-blue-600" />
           </div>
         );
       case "Mobile App":
         return (
-          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-100">
-            <Smartphone className="h-5 w-5 text-yellow-600" />
+          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100">
+            <Smartphone className="h-5 w-5 text-green-500" />
           </div>
         );
       case "Internal Tool":
         return (
-          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-purple-100">
+          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100">
             <Wrench className="h-5 w-5 text-purple-600" />
           </div>
         );
@@ -155,6 +176,7 @@ export default function ProjectsPage() {
           total={filteredProjects.length}
           filterOptions={statusOptions}
           selectedFilter={statusFilter}
+          onAddNew={handleAddNewClick}
           onFilterChange={(value) => {
             setStatusFilter(value);
             setCurrentPage(1);
@@ -166,7 +188,8 @@ export default function ProjectsPage() {
           <table className="min-w-full">
             <thead>
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Project</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Project No.</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Client</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Budget</th>
                 {/* <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Start</th> */}
@@ -187,7 +210,9 @@ export default function ProjectsPage() {
                       <span className="text-xs text-gray-500 w-48 truncate">{project.description}</span>
                     </div>
                   </td>
-
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <p className="text-sm text-gray-700">{project.projectNo}</p>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <p className="text-sm text-gray-700">{project.client}</p>
                   </td>
@@ -216,10 +241,10 @@ export default function ProjectsPage() {
                     </Badge>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right flex justify-end space-x-2 sticky right-0 bg-white z-10">
-                    <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
+                    <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700" onClick={() => handleDetailClick(project.projectNo)}>
                       <Eye size={16} />
                     </button>
-                    <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
+                    <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700 flex items-center justify-center" onClick={() => handleEditClick(project.projectNo)}>
                       <Pencil size={16} />
                     </button>
                   </td>

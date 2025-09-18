@@ -124,7 +124,7 @@ export default function OverviewPage() {
           {/* Scrollable list */}
           <ul className="space-y-2 sm:space-y-3 max-h-64 overflow-y-auto custom-scroll pr-2">
             {tasksDueToday.map((task) => (
-              <li key={task.id} className="flex flex-wrap justify-between items-center px-3 sm:px-4 py-2 sm:py-3 rounded-full bg-slate-50 hover:bg-gray-100 transition">
+              <li key={task.id} className="flex flex-wrap justify-between items-center px-3 sm:px-4 py-2 sm:py-3 rounded-full bg-slate-50 hover:bg-slate-100 transition">
                 <span className="text-xs sm:text-sm text-gray-700">{task.name}</span>
                 <span
                   className={`text-xs sm:text-sm font-semibold px-2 sm:px-3 py-1 sm:py-2 rounded-full ${

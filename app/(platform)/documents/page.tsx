@@ -47,7 +47,7 @@ export default function DocumentApprovalPage() {
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       <div className="md:col-span-12 bg-white p-4 sm:p-6 rounded-3xl flex flex-col">
         <DataListHeader
-          title="Document Approval"
+          title="All Document"
           total={filteredDocuments.length}
           filterOptions={statusOptions}
           selectedFilter={statusFilter}
