@@ -35,7 +35,7 @@ export default function Modal({ isOpen, onClose, children, title }: ModalProps) 
           </button>
         </div>
 
-        <div className="flex flex-col gap-3">{children}</div>
+        <div className="flex flex-col gap-1">{children}</div>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle2, XCircle, Info, AlertTriangle, X, CheckCircle22 } from "lucide-react";
+import { CheckCircle2, XCircle, Info, AlertTriangle, X } from "lucide-react";
 
 type NotificationType = "success" | "error" | "info" | "warning";
 
@@ -62,7 +62,7 @@ export default function NotificationManager() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.25 }}
               className="flex items-center space-x-2 
-             bg-white/30 backdrop-blur-lg border border-white/20
+             bg-white/10 backdrop-blur-xl border border-white/20
              rounded-xl shadow-xl p-5"
             >
               {getIcon(n.type)}

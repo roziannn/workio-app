@@ -46,24 +46,30 @@ export default function Sidebar() {
   ];
 
   const renderLink = (item: NavItem) => {
-    const isActive = pathname === item.href;
+    // using startsWith untuk memeriksa kecocokan URL
+    const isActive = item.href && pathname.startsWith(item.href);
+
     if (item.children) {
       const isSubOpen = openSubmenu === item.label;
+
+      // cek if salah satu child aktif, open submenu secara otomatis
+      const isAnyChildActive = item.children.some((child) => child.href && pathname.startsWith(child.href));
+
       return (
         <div key={item.label}>
           <button
             onClick={() => setOpenSubmenu(isSubOpen ? null : item.label)}
-            className={`flex items-center justify-between w-full px-4 py-3 rounded-3xl font-medium transition ${isSubOpen ? "bg-gray-100 text-red-500" : "hover:bg-gray-100 hover:text-red-500"}`}
+            className={`flex items-center justify-between w-full px-4 py-3 rounded-3xl font-medium transition ${isSubOpen || isAnyChildActive ? "bg-gray-100 text-red-500" : "hover:bg-gray-100 hover:text-red-500"}`}
           >
             <div className="flex items-center gap-2">
               <item.icon size={18} /> {item.label}
             </div>
-            {isSubOpen ? <ChevronDownCircle size={16} /> : <ChevronRightCircle size={16} />}
+            {isSubOpen || isAnyChildActive ? <ChevronDownCircle size={16} /> : <ChevronRightCircle size={16} />}
           </button>
-          {isSubOpen && (
+          {(isSubOpen || isAnyChildActive) && (
             <div className="pl-8 mt-2 space-y-2">
               {item.children!.map((child) => (
-                <Link key={child.href} href={child.href!} className={`flex items-center gap-2 px-4 py-3 rounded-3xl font-medium transition ${pathname === child.href ? "btn-primary" : "hover:bg-gray-50 hover:text-red-500"}`}>
+                <Link key={child.href} href={child.href!} className={`flex items-center gap-2 px-4 py-3 rounded-3xl font-medium transition ${pathname.startsWith(child.href!) ? "btn-primary" : "hover:bg-gray-50 hover:text-red-500"}`}>
                   <child.icon size={16} /> {child.label}
                 </Link>
               ))}
@@ -72,6 +78,7 @@ export default function Sidebar() {
         </div>
       );
     }
+
     return (
       <Link key={item.href} href={item.href!} className={`flex items-center gap-2 px-4 py-3 rounded-3xl font-medium transition ${isActive ? "btn-primary" : "hover:bg-gray-100 hover:text-red-500"}`}>
         <item.icon size={18} /> {item.label}

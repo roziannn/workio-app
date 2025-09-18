@@ -4,14 +4,57 @@ import { useState } from "react";
 import { Eye, Pencil, CheckCircle2, XCircle } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
+import Pagination from "@/components/Pagination";
+import { Teams } from "@/types/teams";
+import Link from "next/link";
 
 export default function TeamsPage() {
-  const people = [
-    { id: 1, name: "Alice Johnson", email: "alice@example.com", role: "Manager", subRole: "Frontend Developer", registeredAt: "2024-01-12", status: "Active" },
-    { id: 2, name: "Bob Smith", email: "bob@example.com", role: "Staff", subRole: "Backend Developer", registeredAt: "2024-02-08", status: "Inactive" },
-    { id: 3, name: "Charlie Brown", email: "charlie@example.com", role: "Designer", subRole: "UI/UX", registeredAt: "2024-02-20", status: "Active" },
-    { id: 4, name: "Diana Prince", email: "diana@example.com", role: "QA", subRole: "Engineer", registeredAt: "2024-03-05", status: "Inactive" },
-    { id: 5, name: "Ethan Hunt", email: "ethan@example.com", role: "Marketing", subRole: "Specialist", registeredAt: "2024-03-15", status: "Active" },
+  const teamsData: Teams[] = [
+    {
+      id: 1,
+      name: "Alice Johnson",
+      email: "alice@example.com",
+      role: "Manager",
+      unit: "Frontend Developer",
+      registeredAt: "2024-01-12",
+      status: "Active",
+      tasks: [
+        { id: 101, title: "Build dashboard", status: "Completed" },
+        { id: 102, title: "Update API integration", status: "In Progress" },
+      ],
+      history: [
+        { id: 1, type: "Unit Change", from: "Backend Engineer", to: "Frontend Developer", date: "2024-02-01" },
+        { id: 2, type: "Status Update", from: "Inactive", to: "Active", date: "2024-01-12" },
+      ],
+    },
+    {
+      id: 2,
+      name: "Bob Smith",
+      email: "bob@example.com",
+      role: "Staff",
+      unit: "Backend Developer",
+      registeredAt: "2024-02-08",
+      status: "Inactive",
+      tasks: [{ id: 103, title: "Fix login bug", status: "Pending" }],
+      history: [
+        { id: 1, type: "Unit Change", from: "Backend Engineer", to: "Frontend Developer", date: "2024-02-01" },
+        { id: 2, type: "Status Update", from: "Inactive", to: "Active", date: "2024-01-12" },
+      ],
+    },
+    {
+      id: 3,
+      name: "Charlie Brown",
+      email: "charlie@example.com",
+      role: "Designer",
+      unit: "UI/UX",
+      registeredAt: "2024-02-20",
+      status: "Active",
+      tasks: [{ id: 104, title: "Design landing page", status: "Completed" }],
+      history: [
+        { id: 1, type: "Unit Change", from: "Backend Engineer", to: "Frontend Developer", date: "2024-02-01" },
+        { id: 2, type: "Status Update", from: "Inactive", to: "Active", date: "2024-01-12" },
+      ],
+    },
   ];
 
   const personStatusStyles: Record<string, string> = {
@@ -23,7 +66,7 @@ export default function TeamsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("All");
 
-  const filteredPeople = statusFilter === "All" ? people : people.filter((p) => p.status === statusFilter);
+  const filteredPeople = statusFilter === "All" ? teamsData : teamsData.filter((p) => p.status === statusFilter);
   const totalPages = Math.ceil(filteredPeople.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
@@ -34,7 +77,6 @@ export default function TeamsPage() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       <div className="md:col-span-12 bg-white p-4 sm:p-6 rounded-3xl flex flex-col">
-        {/* Gunakan DataListHeader */}
         <DataListHeader
           title="All People"
           total={filteredPeople.length}
@@ -48,13 +90,13 @@ export default function TeamsPage() {
           onImport={() => console.log("Import clicked")}
         />
 
-        {/* People list */}
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto mt-4">
           <table className="min-w-full">
             <thead>
               <tr>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Role</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Job Level</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tasks</th>
                 <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
               </tr>
@@ -72,8 +114,10 @@ export default function TeamsPage() {
 
                   <td className="px-6 py-4 whitespace-nowrap">
                     <p className="text-sm font-semibold text-gray-800">{person.role}</p>
-                    <p className="text-xs text-gray-500">{person.subRole}</p>
+                    <p className="text-xs text-gray-500">{person.unit}</p>
                   </td>
+
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{person.tasks.length} assigned</td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <Badge colorClass={personStatusStyles[person.status]} icon={person.status === "Active" ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
@@ -85,9 +129,11 @@ export default function TeamsPage() {
                     <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
                       <Eye size={16} />
                     </button>
-                    <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
-                      <Pencil size={16} />
-                    </button>
+                    <Link href={`/teams/${person.id}`}>
+                      <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
+                        <Pencil size={16} />
+                      </button>
+                    </Link>
                   </td>
                 </tr>
               ))}
@@ -95,16 +141,7 @@ export default function TeamsPage() {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="flex items-center justify-end mt-6">
-          <div className="flex space-x-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button key={page} onClick={() => setCurrentPage(page)} className={`px-3 py-1 rounded-md text-sm font-medium transition ${currentPage === page ? "bg-[#FF0B55] text-white" : "bg-slate-100 text-gray-700 hover:bg-slate-200"}`}>
-                {page}
-              </button>
-            ))}
-          </div>
-        </div>
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       </div>
     </div>
   );
