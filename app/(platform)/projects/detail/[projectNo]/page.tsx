@@ -220,7 +220,7 @@ export default function ProjectDetailPage() {
                 {task.status === "Active" && <CheckCircle2 className="text-green-600" />}
                 {task.status === "Inactive" && <XCircle className="text-red-600" />}
                 {task.status === "Completed" && <Flag className="text-blue-600" />}
-                <span className="text-sm text-slate-900">{formatDate(task.date)}</span>
+                <span className="text-sm text-slate-600">{formatDate(task.date)}</span>
               </div>
             </li>
           ))}
@@ -240,7 +240,7 @@ export default function ProjectDetailPage() {
                 {doc.status === "Active" && <CheckCircle2 className="text-green-600" />}
                 {doc.status === "Inactive" && <XCircle className="text-red-600" />}
                 {doc.status === "Completed" && <Flag className="text-blue-600" />}
-                <span className="text-sm text-slate-900">{formatDate(doc.date)}</span>
+                <span className="text-sm text-slate-600">{formatDate(doc.date)}</span>
               </div>
             </li>
           ))}

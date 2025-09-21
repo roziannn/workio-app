@@ -88,8 +88,8 @@ export default function AuditTrailPage() {
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">User</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Module</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Timestamp</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Timestamp</th>
               </tr>
             </thead>
             <tbody>
@@ -98,8 +98,8 @@ export default function AuditTrailPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{audit.user}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{audit.action}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{audit.module}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatDateTime(audit.timestamp)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{audit.status}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatDateTime(audit.timestamp)}</td>
                 </tr>
               ))}
 

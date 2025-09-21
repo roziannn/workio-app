@@ -7,6 +7,7 @@ import Badge from "@/components/Badge";
 import InputField from "@/components/InputField";
 import { notify } from "@/components/NotifiactionManager";
 import { formatRupiah } from "@/utils/currency";
+import TextareaField from "@/components/TextareaField";
 
 type Category = "Web App" | "Mobile App" | "Internal Tool";
 type Priority = "High" | "Medium" | "Low";
@@ -156,20 +157,16 @@ export default function EditProjectPage() {
             error={formErrors.name}
           />
 
-          <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700">Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => {
-                setDescription(e.target.value);
-                setFormErrors((prev) => ({ ...prev, description: "" }));
-              }}
-              rows={3}
-              placeholder="Short description..."
-              className={`mt-1 w-full text-sm border px-3 py-2 rounded-lg focus:outline-none focus:border-red-500 ${formErrors.description ? "border-red-500" : "border-gray-300"}`}
-            />
-            {formErrors.description && <p className="text-red-500 text-xs mt-1">{formErrors.description}</p>}
-          </div>
+          <TextareaField
+            label="Description"
+            value={description}
+            onChange={(val) => {
+              setDescription(val);
+              setFormErrors((prev) => ({ ...prev, description: "" }));
+            }}
+            placeholder="Add any additional notes or details about the task."
+            error={formErrors.notes}
+          />
 
           <InputField
             label="Client"

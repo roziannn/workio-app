@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Search, User, CheckCircle2, X, Flag } from "lucide-react"; // Import 'Flag' icon
+import { Search, User, CheckCircle2, X, Flag } from "lucide-react";
 import { notify } from "@/components/NotifiactionManager";
 import InputField from "@/components/InputField";
-import Badge from "@/components/Badge"; // Pastikan Anda mengimpor Badge
-import Label from "@/components/Label";
+import Badge from "@/components/Badge";
+import TextareaField from "@/components/TextareaField";
 
-// Mock data for existing projects and team members
 const projects = [
   { id: 1, name: "Website Redesign" },
   { id: 2, name: "Mobile App Development" },
@@ -220,21 +219,16 @@ export default function NewTaskPage() {
 
           <InputField label="Task Deadline" value={deadline} onChange={setDeadline} type="date" error={formErrors.deadline} />
 
-          {/* Textarea for Notes */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Notes</label>
-            <textarea
-              value={notes}
-              onChange={(e) => {
-                setNotes(e.target.value);
-                setFormErrors((prev) => ({ ...prev, notes: "" }));
-              }}
-              rows={3}
-              placeholder="Add any additional notes or details about the task."
-              className={`mt-1 w-full text-sm border px-3 py-2 rounded-lg focus:outline-none focus:border-red-500 ${formErrors.notes ? "border-red-500" : "border-gray-300"}`}
-            />
-            {formErrors.notes && <p className="text-red-500 text-xs mt-1">{formErrors.notes}</p>}
-          </div>
+          <TextareaField
+            label="Notes"
+            value={notes}
+            onChange={(val) => {
+              setNotes(val);
+              setFormErrors((prev) => ({ ...prev, notes: "" }));
+            }}
+            placeholder="Add any additional notes or details about the task."
+            error={formErrors.notes}
+          />
 
           <button type="submit" className="btn-primary w-full">
             Save Task

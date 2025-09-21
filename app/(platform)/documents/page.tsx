@@ -1,38 +1,84 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, CheckCircle2, XCircle, FileText, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { Eye, Pencil, FileText, CheckCircle2, XCircle, Clock } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 import { formatDate } from "@/utils/dateHelper";
 import Pagination from "@/components/Pagination";
 
-interface DocumentApproval {
+interface Documents {
   id: number;
+  docNo: string;
   title: string;
   project: string;
-  task: string;
-  owner: string;
-  submittedDate: string;
-  status: "Pending" | "Approved" | "Rejected";
+  status: "Draft" | "Submitted" | "Approved" | "Rejected";
+  createdBy: string;
+  submittedDate?: string;
+  lastUpdated: string;
+  reviewer?: string;
 }
 
-export default function DocumentApprovalPage() {
-  const documents: DocumentApproval[] = [
-    { id: 1, title: "Proposal Alpha", project: "Project 1", task: "Task A", owner: "Alice Johnson", submittedDate: "2025-09-10", status: "Pending" },
-    { id: 2, title: "Design Beta", project: "Project 1", task: "Task B", owner: "Bob Smith", submittedDate: "2025-09-11", status: "Approved" },
-    { id: 3, title: "Report Gamma", project: "Project 2", task: "Task C", owner: "Charlie Brown", submittedDate: "2025-09-12", status: "Rejected" },
-    { id: 4, title: "Specification Delta", project: "Project 3", task: "Task D", owner: "Diana Prince", submittedDate: "2025-09-12", status: "Pending" },
-    { id: 5, title: "Test Plan Epsilon", project: "Project 3", task: "Task E", owner: "Ethan Hunt", submittedDate: "2025-09-13", status: "Approved" },
+export default function DocumentsPage() {
+  const router = useRouter();
+
+  const documents: Documents[] = [
+    {
+      id: 1,
+      docNo: "DOC-2025-001",
+      title: "Project Brief",
+      project: "PRJ-WEB-202509-001",
+      status: "Approved",
+      createdBy: "Alice",
+      submittedDate: "2025-09-10",
+      lastUpdated: "2025-09-12",
+      reviewer: "Daniel",
+    },
+    {
+      id: 2,
+      docNo: "DOC-2025-002",
+      title: "Contract Client",
+      project: "PRJ-MOB-202509-001",
+      status: "Submitted",
+      createdBy: "Charlie",
+      submittedDate: "2025-09-16",
+      lastUpdated: "2025-09-16",
+      reviewer: undefined,
+    },
+    {
+      id: 3,
+      docNo: "DOC-2025-003",
+      title: "Design Mockup",
+      project: "PRJ-WEB-202509-001",
+      status: "Draft",
+      createdBy: "Bob",
+      submittedDate: undefined,
+      lastUpdated: "2025-09-15",
+      reviewer: undefined,
+    },
+    {
+      id: 4,
+      docNo: "DOC-2025-004",
+      title: "Budget Proposal",
+      project: "PRJ-INT-202509-001",
+      status: "Rejected",
+      createdBy: "Dave",
+      submittedDate: "2025-09-14",
+      reviewer: "Alice Jordania",
+      lastUpdated: "2025-09-15",
+    },
   ];
 
-  const statusStyles: Record<DocumentApproval["status"], string> = {
-    Pending: "bg-yellow-100 text-yellow-700 border-yellow-500",
+  const statusStyles: Record<Documents["status"], string> = {
+    Draft: "bg-gray-100 text-gray-700 border-gray-400",
+    Submitted: "bg-yellow-100 text-yellow-700 border-yellow-500",
     Approved: "bg-green-100 text-green-700 border-green-500",
     Rejected: "bg-red-100 text-red-700 border-red-500",
   };
 
-  const statusOptions = ["All", "Pending", "Approved", "Rejected"];
+  const statusOptions = ["All", "Draft", "Submitted", "Approved", "Rejected"];
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("All");
   const itemsPerPage = 5;
@@ -43,51 +89,79 @@ export default function DocumentApprovalPage() {
   const indexOfFirst = indexOfLast - itemsPerPage;
   const currentDocuments = filteredDocuments.slice(indexOfFirst, indexOfLast);
 
+  const getStatusIcon = (status: Documents["status"]) => {
+    switch (status) {
+      case "Approved":
+        return <CheckCircle2 className="h-3 w-3" />;
+      case "Rejected":
+        return <XCircle className="h-3 w-3" />;
+      case "Submitted":
+        return <Clock className="h-3 w-3" />;
+      default:
+        return <FileText className="h-3 w-3" />;
+    }
+  };
+
+  const handleAddNewClick = () => {
+    router.push("/documents/create");
+  };
+
+  const handleDetailClick = (docNo: string) => {
+    router.push(`/documents/detail/${docNo}`);
+  };
+  const handleEditClick = (docNo: string) => {
+    router.push(`/documents/edit/${docNo}`);
+  };
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       <div className="md:col-span-12 bg-white p-4 sm:p-6 rounded-3xl flex flex-col">
         <DataListHeader
-          title="All Document"
+          title="All Documents"
           total={filteredDocuments.length}
           filterOptions={statusOptions}
           selectedFilter={statusFilter}
+          onAddNew={handleAddNewClick}
           onFilterChange={(value) => {
             setStatusFilter(value);
             setCurrentPage(1);
           }}
         />
-
-        {/* Table */}
-        <div className="overflow-x-auto mt-4">
+        <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
               <tr>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Doc. No</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Project</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Owner</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Submitted</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Project No.</th>
                 <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Reviewer</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">CreatedBy</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Submitted</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Updated</th>
                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody>
               {currentDocuments.map((doc) => (
-                <tr key={doc.id} className="bg-white hover:bg-gray-50 rounded-2xl mb-2">
-                  <td className="px-6 py-4 whitespace-nowrap flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-gray-600" />
-                    <span className="text-sm font-semibold text-gray-800">{doc.title}</span>
-                  </td>
+                <tr key={doc.id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.docNo}</td> {/* ✅ isi docNo */}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">{doc.title}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.project}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.owner}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatDate(doc.submittedDate)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <Badge colorClass={statusStyles[doc.status]} icon={doc.status === "Approved" ? <CheckCircle2 className="h-3 w-3" /> : doc.status === "Rejected" ? <XCircle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}>
+                    <Badge colorClass={statusStyles[doc.status]} icon={getStatusIcon(doc.status)}>
                       {doc.status}
                     </Badge>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.status === "Approved" || doc.status === "Rejected" ? doc.reviewer || "-" : "-"}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.createdBy}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.submittedDate ? formatDate(doc.submittedDate) : "-"}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatDate(doc.lastUpdated)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right flex justify-end space-x-2">
-                    <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
+                    <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700" onClick={() => handleDetailClick(doc.docNo)}>
                       <Eye size={16} />
+                    </button>
+                    <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700" onClick={() => handleEditClick(doc.docNo)}>
+                      <Pencil size={16} />
                     </button>
                   </td>
                 </tr>

@@ -192,7 +192,6 @@ export default function ProjectsPage() {
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Project No.</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Client</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Budget</th>
-                {/* <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Start</th> */}
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">DueDate</th>
                 <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Progress</th>
                 <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Priority</th>
@@ -202,7 +201,7 @@ export default function ProjectsPage() {
             </thead>
             <tbody>
               {currentProjects.map((project) => (
-                <tr key={project.id} className="bg-white rounded-2xl mb-2">
+                <tr key={project.id}>
                   <td className="px-6 py-4 whitespace-nowrap flex items-center space-x-3">
                     {getCategoryIcon(project.category)}
                     <div className="flex flex-col">
