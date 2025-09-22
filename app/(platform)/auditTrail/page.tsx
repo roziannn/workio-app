@@ -1,35 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Download, X } from "lucide-react";
+import { Download } from "lucide-react";
 import { formatDateTime } from "@/utils/dateHelper";
 import Pagination from "@/components/Pagination";
-
-interface AuditTrail {
-  id: number;
-  user: string;
-  action: string;
-  module: string;
-  timestamp: string;
-  status: "Success" | "Failed";
-}
-
-const initialAuditTrail: AuditTrail[] = [
-  { id: 1, user: "Alice Johnson", action: "Login", module: "Authentication", timestamp: "2025-09-12 08:00", status: "Success" },
-  { id: 2, user: "Bob Smith", action: "Update Project", module: "Project Management", timestamp: "2025-09-12 09:15", status: "Failed" },
-  { id: 3, user: "Charlie Brown", action: "Create Task", module: "Task Management", timestamp: "2025-09-12 10:30", status: "Success" },
-  { id: 4, user: "Diana Prince", action: "Delete Document", module: "Document Management", timestamp: "2025-09-12 11:45", status: "Success" },
-];
+import Modal from "@/components/Modal";
+import InputField from "@/components/InputField";
+import { auditTrailData } from "./data";
 
 export default function AuditTrailPage() {
-  const [auditList, setAuditList] = useState(initialAuditTrail);
+  const [auditList] = useState(auditTrailData);
   const [currentPage, setCurrentPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilter] = useState("All");
   const [showModal, setShowModal] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
   const filteredAudits = statusFilter === "All" ? auditList : auditList.filter((a) => a.status === statusFilter);
 
   const totalPages = Math.ceil(filteredAudits.length / itemsPerPage);
@@ -37,19 +24,15 @@ export default function AuditTrailPage() {
   const indexOfFirst = indexOfLast - itemsPerPage;
   const currentAudits = filteredAudits.slice(indexOfFirst, indexOfLast);
 
-  const handleExport = () => {
-    setShowModal(true);
-  };
+  const handleExport = () => setShowModal(true);
 
   const confirmExport = () => {
-    console.log("Export from", startDate, "to", endDate);
     setShowModal(false);
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       <div className="md:col-span-12 bg-white p-4 sm:p-6 rounded-3xl flex flex-col">
-        {/* Header hanya dengan tombol Export */}
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-800">Audit Trail</h2>
           <button onClick={handleExport} className="flex items-center px-4 py-2 bg-green-500 hover:bg-green-700 text-white rounded-lg text-sm font-medium">
@@ -71,7 +54,7 @@ export default function AuditTrailPage() {
             </thead>
             <tbody>
               {currentAudits.map((audit) => (
-                <tr key={audit.id} className="mb-2">
+                <tr key={audit.id} className="mb-2 border-b border-gray-200">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{audit.user}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{audit.action}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{audit.module}</td>
@@ -79,7 +62,6 @@ export default function AuditTrailPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatDateTime(audit.timestamp)}</td>
                 </tr>
               ))}
-
               {currentAudits.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
@@ -90,32 +72,14 @@ export default function AuditTrailPage() {
             </tbody>
           </table>
         </div>
-
         <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-
-        {showModal && (
-          <div className="fixed inset-0 m-3 bg-opacity-50 backdrop-blur-xs flex items-center justify-center z-50">
-            <div className="bg-white rounded-3xl p-6 w-full max-w-md relative shadow-lg">
-              <button onClick={() => setShowModal(false)} className="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-                <X />
-              </button>
-              <h3 className="text-lg font-semibold mb-4">Export Audit Trail</h3>
-              <div className="flex flex-col space-y-4">
-                <label className="flex flex-col text-sm text-gray-700">
-                  Start Date
-                  <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="mt-1 p-2 border rounded-md" />
-                </label>
-                <label className="flex flex-col text-sm text-gray-700">
-                  End Date
-                  <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="mt-1 p-2 border rounded-md" />
-                </label>
-                <button onClick={confirmExport} className="flex items-center justify-center px-4 py-2 bg-green-500 hover:bg-green-700 text-white rounded-lg text-sm font-medium mt-2">
-                  <Download className="h-4 w-4 mr-2" /> Export
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Export Audit Trail">
+          <InputField label="Start Date" type="date" value={startDate} onChange={setStartDate} />
+          <InputField label="End Date" type="date" value={endDate} onChange={setEndDate} />
+          <button onClick={confirmExport} className="btn-secondary mt-4">
+            Export
+          </button>
+        </Modal>
       </div>
     </div>
   );

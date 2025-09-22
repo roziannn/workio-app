@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { FileText, User, Folder, CheckCircle2, MessageSquare, X, Download, ThumbsUp, Upload, Plus, Paperclip } from "lucide-react";
+import { FileText, User, Folder, CheckCircle2, MessageSquare, ThumbsUp, Upload, Paperclip } from "lucide-react";
 import Badge from "@/components/Badge";
 import { formatDate } from "@/utils/dateHelper";
 import { notify } from "@/components/NotifiactionManager";

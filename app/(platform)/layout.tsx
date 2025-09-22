@@ -3,8 +3,8 @@
 import NotificationManager from "@/components/NotifiactionManager";
 import Sidebar from "@/components/Sidebar";
 import { User, ChevronRight } from "lucide-react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -21,7 +21,6 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
 
       <div className="flex-1 flex flex-col">
         <header className="flex items-center justify-between bg-white p-5 m-6 rounded-2xl shadow-sm">
-          {/* Breadcrumb */}
           <nav className="text-gray-600 text-sm flex items-center space-x-2">
             {segments.map((segment, index) => {
               const href = "/" + segments.slice(0, index + 1).join("/");
@@ -43,11 +42,12 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
             })}
           </nav>
 
-          {/* Profile */}
           <div className="flex items-center space-x-3">
             <span className="text-slate-900 font-medium">Firda Rosiana</span>
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-200">
-              <User className="w-5 h-5 text-gray-700" />
+              <Link href="/profile" className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-200 hover:bg-slate-300 transition">
+                <User className="w-5 h-5 text-gray-700" />
+              </Link>
             </div>
           </div>
         </header>

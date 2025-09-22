@@ -48,23 +48,16 @@ export default function OverviewPage() {
     { id: 9, name: "Plan workshop", status: "To Do" },
   ];
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const tasksPerPage = 5; // <-- 5 per halaman
+  const tasksPerPage = 5;
   const totalPages = Math.ceil(tasksDueToday.length / tasksPerPage);
 
   const indexOfLastTask = currentPage * tasksPerPage;
   const indexOfFirstTask = indexOfLastTask - tasksPerPage;
-  const currentTasks = tasksDueToday.slice(indexOfFirstTask, indexOfLastTask);
-
-  const handlePrev = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-  const handleNext = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
   return (
     <div className="space-y-6 pb-6 px-0 lg:mx-0">
-      {/* Row 1: Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Total Projects */}
         <div className="lg:col-span-4 bg-white p-4 sm:p-6 rounded-3xl flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
@@ -89,7 +82,6 @@ export default function OverviewPage() {
           </div>
         </div>
 
-        {/* Task Productivity Line */}
         <div className="lg:col-span-8 bg-white p-4 sm:p-6 rounded-3xl h-[250px] sm:h-[300px]">
           <h2 className="text-sm sm:text-md font-semibold text-slate-600 mb-4 flex items-center space-x-2">
             <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-[#FF0B55]" />
@@ -111,10 +103,8 @@ export default function OverviewPage() {
         </div>
       </div>
 
-      {/* Row 2: Tasks + Milestone */}
+      {/* Tasks Milestone */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-        {/* Tasks Due Today */}
-        {/* Tasks Due Today */}
         <div className="md:col-span-7 bg-white p-4 sm:p-6 rounded-3xl flex flex-col">
           <h2 className="text-sm sm:text-md font-semibold text-slate-600 mb-4 flex items-center space-x-2">
             <CalendarClock className="w-4 h-4 sm:w-5 sm:h-5 text-[#FF0B55]" />

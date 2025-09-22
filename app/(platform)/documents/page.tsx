@@ -143,7 +143,7 @@ export default function DocumentsPage() {
             <tbody>
               {currentDocuments.map((doc) => (
                 <tr key={doc.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.docNo}</td> {/* ✅ isi docNo */}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.docNo}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">{doc.title}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.project}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">

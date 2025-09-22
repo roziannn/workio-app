@@ -170,7 +170,7 @@ export default function DetailTaskPage() {
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       {/* Left: New Task Form */}
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl space-y-6">
-        <h2 className="text-2xl font-semibold mb-2">{isEditMode ? "Edit Task" : "New Task"}</h2>
+        <h2 className="text-xl font-semibold mb-2">{isEditMode ? "Edit Task" : "New Task"}</h2>
         <p className="text-gray-500 mb-6">{isEditMode ? "Edit the details of this task." : "Create a new task and assign it to a team member."}</p>
         <form onSubmit={handleSubmit} className="space-y-6">
           <InputField label="Task Name" value={taskName} onChange={setTaskName} placeholder="e.g., Deploy new API endpoint" error={formErrors.taskName} />
