@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Download, X } from "lucide-react";
 import { formatDateTime } from "@/utils/dateHelper";
+import Pagination from "@/components/Pagination";
 
 interface AuditTrail {
   id: number;
@@ -29,18 +30,12 @@ export default function AuditTrailPage() {
   const [endDate, setEndDate] = useState("");
 
   const itemsPerPage = 5;
-  const filterOptions = ["All", "Success", "Failed"];
   const filteredAudits = statusFilter === "All" ? auditList : auditList.filter((a) => a.status === statusFilter);
 
   const totalPages = Math.ceil(filteredAudits.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
   const currentAudits = filteredAudits.slice(indexOfFirst, indexOfLast);
-
-  const statusStyles: Record<AuditTrail["status"], string> = {
-    Success: "bg-green-100 text-green-700 border-green-500",
-    Failed: "bg-red-100 text-red-700 border-red-500",
-  };
 
   const handleExport = () => {
     setShowModal(true);
@@ -49,7 +44,6 @@ export default function AuditTrailPage() {
   const confirmExport = () => {
     console.log("Export from", startDate, "to", endDate);
     setShowModal(false);
-    // nanti bisa diganti dengan library CSV / Excel export
   };
 
   return (
@@ -64,23 +58,6 @@ export default function AuditTrailPage() {
           </button>
         </div>
 
-        {/* Filter */}
-        <div className="mt-4 flex space-x-2">
-          {filterOptions.map((option) => (
-            <button
-              key={option}
-              onClick={() => {
-                setStatusFilter(option);
-                setCurrentPage(1);
-              }}
-              className={`px-3 py-1 rounded-md text-sm font-medium transition ${statusFilter === option ? "bg-[#FF0B55] text-white" : "bg-slate-100 text-gray-700 hover:bg-slate-200"}`}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-
-        {/* Table */}
         <div className="overflow-x-auto mt-4">
           <table className="min-w-full">
             <thead>
@@ -94,7 +71,7 @@ export default function AuditTrailPage() {
             </thead>
             <tbody>
               {currentAudits.map((audit) => (
-                <tr key={audit.id} className="bg-white hover:bg-gray-50 rounded-2xl mb-2">
+                <tr key={audit.id} className="mb-2">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{audit.user}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{audit.action}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{audit.module}</td>
@@ -114,18 +91,8 @@ export default function AuditTrailPage() {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="flex items-center justify-end mt-6">
-          <div className="flex space-x-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button key={page} onClick={() => setCurrentPage(page)} className={`px-3 py-1 rounded-md text-sm font-medium transition ${currentPage === page ? "bg-[#FF0B55] text-white" : "bg-slate-100 text-gray-700 hover:bg-slate-200"}`}>
-                {page}
-              </button>
-            ))}
-          </div>
-        </div>
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
 
-        {/* Modal Export */}
         {showModal && (
           <div className="fixed inset-0 m-3 bg-opacity-50 backdrop-blur-xs flex items-center justify-center z-50">
             <div className="bg-white rounded-3xl p-6 w-full max-w-md relative shadow-lg">

@@ -105,7 +105,6 @@ export default function DocumentsPage() {
   const handleAddNewClick = () => {
     router.push("/documents/create");
   };
-
   const handleDetailClick = (docNo: string) => {
     router.push(`/documents/detail/${docNo}`);
   };

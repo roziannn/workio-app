@@ -27,7 +27,7 @@ export default function Sidebar() {
       label: "Master",
       icon: BoxIcon,
       children: [
-        { href: "/master/account", label: "Account", icon: User },
+        // { href: "/master/account", label: "Account", icon: User },
         { href: "/master/project", label: "Project", icon: ListCheck },
         { href: "/master/unit", label: "Unit", icon: Box },
         { href: "/master/role", label: "Role", icon: Shield },

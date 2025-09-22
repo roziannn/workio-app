@@ -16,6 +16,7 @@ export interface Teams {
   id: number;
   name: string;
   email: string;
+  phone: string;
   role: string;
   unit: string;
   registeredAt: string;

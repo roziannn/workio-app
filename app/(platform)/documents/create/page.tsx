@@ -143,18 +143,18 @@ export default function NewTaskPage() {
                     onChange={(e) => setReviewerSearchQuery(e.target.value)}
                     onFocus={() => setShowReviewerSuggestions(true)}
                     placeholder={reviewers.length === 0 ? "e.g., John Doe" : ""}
-                    className="flex-grow min-w-[5rem] bg-transparent focus:outline-none"
+                    className="flex-grow min-w-[5rem] bg-transparent focus:outline-none text-sm"
                   />
                 )}
               </div>
 
               {showReviewerSuggestions && reviewers.length < 2 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                <div className="absolute z-10 w-full mt-1 bg-white borderborder-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                   {filteredReviewers.length > 0 ? (
                     filteredReviewers.map((member) => (
                       <div key={member.id} className="flex items-center p-3 cursor-pointer hover:bg-gray-100" onClick={() => handleReviewerChange(member.id)}>
                         <User size={16} className="text-gray-500 mr-2" />
-                        <span className="font-medium">{member.name}</span>
+                        <span className="text-sm font-medium">{member.name}</span>
                       </div>
                     ))
                   ) : (

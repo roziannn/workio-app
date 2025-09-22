@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Eye, Pencil, CheckCircle2, XCircle } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
@@ -9,11 +10,14 @@ import { Teams } from "@/types/teams";
 import Link from "next/link";
 
 export default function TeamsPage() {
+  const router = useRouter();
+
   const teamsData: Teams[] = [
     {
       id: 1,
       name: "Alice Johnson",
       email: "alice@example.com",
+      phone: "0891271821",
       role: "Manager",
       unit: "Frontend Developer",
       registeredAt: "2024-01-12",
@@ -31,6 +35,7 @@ export default function TeamsPage() {
       id: 2,
       name: "Bob Smith",
       email: "bob@example.com",
+      phone: "0891271821",
       role: "Staff",
       unit: "Backend Developer",
       registeredAt: "2024-02-08",
@@ -45,6 +50,7 @@ export default function TeamsPage() {
       id: 3,
       name: "Charlie Brown",
       email: "charlie@example.com",
+      phone: "0891271821",
       role: "Designer",
       unit: "UI/UX",
       registeredAt: "2024-02-20",
@@ -74,6 +80,10 @@ export default function TeamsPage() {
 
   const filterOptions = ["All", "Active", "Inactive"];
 
+  const handleAddNewClick = () => {
+    router.push("/teams/create");
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       <div className="md:col-span-12 bg-white p-4 sm:p-6 rounded-3xl flex flex-col">
@@ -86,7 +96,7 @@ export default function TeamsPage() {
             setStatusFilter(value);
             setCurrentPage(1);
           }}
-          onAddNew={() => console.log("Add new clicked")}
+          onAddNew={handleAddNewClick}
           onImport={() => console.log("Import clicked")}
         />
 
@@ -103,7 +113,7 @@ export default function TeamsPage() {
             </thead>
             <tbody>
               {currentPeople.map((person) => (
-                <tr key={person.id} className="bg-white hover:bg-gray-50 rounded-2xl mb-2">
+                <tr key={person.id} className="mb-2">
                   <td className="px-6 py-4 whitespace-nowrap flex items-center space-x-4">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF0B55] to-[#FF8225] flex items-center justify-center text-white font-bold">{person.name.charAt(0)}</div>
                     <div>
@@ -126,10 +136,12 @@ export default function TeamsPage() {
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-right flex justify-end space-x-2">
-                    <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
-                      <Eye size={16} />
-                    </button>
-                    <Link href={`/teams/${person.id}`}>
+                    <Link href={`/teams/detail/${person.id}`}>
+                      <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
+                        <Eye size={16} />
+                      </button>
+                    </Link>
+                    <Link href={`/teams/edit/${person.id}`}>
                       <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
                         <Pencil size={16} />
                       </button>
