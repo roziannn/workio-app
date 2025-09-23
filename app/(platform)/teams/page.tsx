@@ -6,73 +6,28 @@ import { Eye, Pencil, CheckCircle2, XCircle } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 import Pagination from "@/components/Pagination";
-import { Teams } from "@/types/teams";
+import { usersData } from "@/data/dummy/user";
 import Link from "next/link";
 
 export default function TeamsPage() {
   const router = useRouter();
-
-  const teamsData: Teams[] = [
-    {
-      id: 1,
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      phone: "0891271821",
-      role: "Manager",
-      unit: "Frontend Developer",
-      registeredAt: "2024-01-12",
-      status: "Active",
-      tasks: [
-        { id: 101, title: "Build dashboard", status: "Completed" },
-        { id: 102, title: "Update API integration", status: "In Progress" },
-      ],
-      history: [
-        { id: 1, type: "Unit Change", from: "Backend Engineer", to: "Frontend Developer", date: "2024-02-01" },
-        { id: 2, type: "Status Update", from: "Inactive", to: "Active", date: "2024-01-12" },
-      ],
-    },
-    {
-      id: 2,
-      name: "Bob Smith",
-      email: "bob@example.com",
-      phone: "0891271821",
-      role: "Staff",
-      unit: "Backend Developer",
-      registeredAt: "2024-02-08",
-      status: "Inactive",
-      tasks: [{ id: 103, title: "Fix login bug", status: "Pending" }],
-      history: [
-        { id: 1, type: "Unit Change", from: "Backend Engineer", to: "Frontend Developer", date: "2024-02-01" },
-        { id: 2, type: "Status Update", from: "Inactive", to: "Active", date: "2024-01-12" },
-      ],
-    },
-    {
-      id: 3,
-      name: "Charlie Brown",
-      email: "charlie@example.com",
-      phone: "0891271821",
-      role: "Designer",
-      unit: "UI/UX",
-      registeredAt: "2024-02-20",
-      status: "Active",
-      tasks: [{ id: 104, title: "Design landing page", status: "Completed" }],
-      history: [
-        { id: 1, type: "Unit Change", from: "Backend Engineer", to: "Frontend Developer", date: "2024-02-01" },
-        { id: 2, type: "Status Update", from: "Inactive", to: "Active", date: "2024-01-12" },
-      ],
-    },
-  ];
 
   const personStatusStyles: Record<string, string> = {
     Active: "bg-green-100 text-green-700 border-green-500",
     Inactive: "bg-red-100 text-red-700 border-red-500",
   };
 
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredPeople = statusFilter === "All" ? teamsData : teamsData.filter((p) => p.status === statusFilter);
+  const filteredPeople = usersData.filter((p) => {
+    const matchesStatus = statusFilter === "All" || p.status === statusFilter;
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.email.toLowerCase().includes(searchQuery.toLowerCase()) || p.unit.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
+
   const totalPages = Math.ceil(filteredPeople.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
@@ -98,6 +53,10 @@ export default function TeamsPage() {
           }}
           onAddNew={handleAddNewClick}
           onImport={() => console.log("Import clicked")}
+          onSearch={(query) => {
+            setSearchQuery(query);
+            setCurrentPage(1);
+          }}
         />
 
         <div className="overflow-x-auto mt-4">

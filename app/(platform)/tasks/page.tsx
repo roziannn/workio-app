@@ -10,11 +10,14 @@ import Pagination from "@/components/Pagination";
 import ModalArchive from "@/components/ModalArchive";
 import { notify } from "@/components/NotifiactionManager";
 
+import { tasksData } from "@/data/dummy/tasks";
+
 export default function TasksPage() {
   const router = useRouter();
   const [statusFilter, setStatusFilter] = useState("All");
+  const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 2;
+  const itemsPerPage = 10;
 
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   const [itemToArchive, setItemToArchive] = useState<{ id: number; name: string } | null>(null);
@@ -22,13 +25,6 @@ export default function TasksPage() {
   const handleAddNewClick = () => {
     router.push("/tasks/create");
   };
-
-  const tasks = [
-    { id: 1, title: "Install Figma on Windows Server", createdAt: "2024-08-22", dueDate: "2024-05-23", priority: "High", status: "In Progress", assignee: "Juliente" },
-    { id: 2, title: "Download RAM Upgrade to 1280MBps", createdAt: "2024-08-22", dueDate: "2024-05-23", priority: "Medium", status: "Completed", assignee: "Milanio" },
-    { id: 3, title: "Payment Settings for Kios Apps", createdAt: "2024-08-22", dueDate: "2024-05-23", priority: "Low", status: "In Progress", assignee: "Amaratki" },
-    { id: 4, title: "Deploy New API Endpoint", createdAt: "2024-08-25", dueDate: "2024-08-30", priority: "High", status: "In Progress", assignee: "Nadia" },
-  ];
 
   const priorityStyles: Record<string, string> = {
     High: "bg-red-100 text-red-600 border-red-500",
@@ -42,7 +38,12 @@ export default function TasksPage() {
   };
 
   const filterOptions = ["All", "In Progress", "Completed"];
-  const filteredTasks = statusFilter === "All" ? tasks : tasks.filter((t) => t.status === statusFilter);
+
+  const filteredTasks = tasksData.filter((t) => {
+    const matchStatus = statusFilter === "All" || t.status === statusFilter;
+    const matchSearch = t.title.toLowerCase().includes(searchText.toLowerCase()) || t.assignee.toLowerCase().includes(searchText.toLowerCase());
+    return matchStatus && matchSearch;
+  });
 
   const totalPages = Math.ceil(filteredTasks.length / itemsPerPage);
   const paginatedTasks = filteredTasks.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -68,10 +69,24 @@ export default function TasksPage() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       <div className="md:col-span-12 bg-white p-4 sm:p-6 rounded-3xl flex flex-col space-y-1">
-        <DataListHeader title="All Tasks" total={filteredTasks.length} filterOptions={filterOptions} selectedFilter={statusFilter} onFilterChange={setStatusFilter} onAddNew={handleAddNewClick} />
+        <DataListHeader
+          title="All Tasks"
+          total={filteredTasks.length}
+          filterOptions={filterOptions}
+          selectedFilter={statusFilter}
+          onFilterChange={(val) => {
+            setStatusFilter(val);
+            setCurrentPage(1);
+          }}
+          onSearch={(val) => {
+            setSearchText(val);
+            setCurrentPage(1);
+          }}
+          onAddNew={handleAddNewClick}
+        />
 
         {paginatedTasks.map((task) => (
-          <div key={task.id} className="p-4 sm:p-6 hover:bg-slate-50 transition">
+          <div key={task.id} className="px-3 py-4 sm:p-5">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2">
               <h2 className="text-base font-semibold text-slate-800 hover:text-slate-900 cursor-pointer break-words">{task.title}</h2>
               <div className="flex space-x-2 self-start sm:self-auto mb-4 lg:mb-0">

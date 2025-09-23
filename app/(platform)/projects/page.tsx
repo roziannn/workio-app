@@ -1,4 +1,3 @@
-// ProjectsPage.tsx
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -8,6 +7,7 @@ import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 import { formatDate } from "@/utils/dateHelper";
 import Pagination from "@/components/Pagination";
+import { projectsData } from "@/data/dummy/projects";
 
 interface Project {
   id: number;
@@ -27,83 +27,7 @@ interface Project {
 
 export default function ProjectsPage() {
   const router = useRouter();
-  const projects: Project[] = [
-    {
-      id: 1,
-      projectNo: "PRJ-WEB-202509-001",
-      name: "Customer Portal Revamp",
-      description: "Redesigning and rebuilding the user-facing customer portal with new features.",
-      owner: "Alice Johnson",
-      category: "Web App",
-      startDate: "2024-01-12",
-      endDate: "2024-03-12",
-      status: "Active",
-      client: "Global Solutions",
-      budget: 5000000,
-      progress: 75,
-      priority: "High",
-    },
-    {
-      id: 2,
-      projectNo: "PRJ-MOB-202509-001",
-      name: "E-Commerce Mobile Shop",
-      description: "Developing a new mobile application for our e-commerce platform.",
-      owner: "Bob Smith",
-      category: "Mobile App",
-      startDate: "2024-02-01",
-      endDate: "2024-04-15",
-      status: "Inactive",
-      client: "Retail Innovations",
-      budget: 7550000,
-      progress: 20,
-      priority: "Medium",
-    },
-    {
-      id: 3,
-      projectNo: "PRJ-MOB-202509-002",
-      name: "Spring Marketing Campaign",
-      description: "A new campaign to promote our spring product line through mobile channels.",
-      owner: "Charlie Brown",
-      category: "Mobile App",
-      startDate: "2024-03-01",
-      endDate: "2024-03-30",
-      status: "Completed",
-      client: "Internal Marketing",
-      budget: 1500000,
-      progress: 100,
-      priority: "Low",
-    },
-    {
-      id: 4,
-      projectNo: "PRJ-WEB-202509-002",
-      name: "Payment Gateway API",
-      description: "Building a secure and scalable API for all payment transactions.",
-      owner: "Diana Prince",
-      category: "Web App",
-      startDate: "2024-03-05",
-      endDate: "2024-06-10",
-      status: "Active",
-      client: "FinTech Partners",
-      budget: 9800000,
-      progress: 50,
-      priority: "High",
-    },
-    {
-      id: 5,
-      projectNo: "PRJ-INT-202509-001",
-      name: "Design System Toolkit",
-      description: "Creating a comprehensive design system for consistent UI/UX across all products.",
-      owner: "Ethan Hunt",
-      category: "Internal Tool",
-      startDate: "2024-04-01",
-      endDate: "2024-06-01",
-      status: "Inactive",
-      client: "Internal R&D",
-      budget: 10500000,
-      progress: 10,
-      priority: "Low",
-    },
-  ];
+  const projects = projectsData;
 
   const statusStyles: Record<Project["status"], string> = {
     Active: "bg-green-100 text-green-700 border-green-500",
@@ -121,10 +45,16 @@ export default function ProjectsPage() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
-  const filteredProjects = projects.filter((p) => statusFilter === "All" || p.status === statusFilter);
+  const filteredProjects = projects.filter((p) => {
+    const matchesStatus = statusFilter === "All" || p.status === statusFilter;
+    const q = searchQuery.trim().toLowerCase();
+    const matchesSearch = q === "" || p.name.toLowerCase().includes(q) || p.projectNo.toLowerCase().includes(q) || p.client.toLowerCase().includes(q);
+    return matchesStatus && matchesSearch;
+  });
 
   const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
@@ -181,9 +111,12 @@ export default function ProjectsPage() {
             setStatusFilter(value);
             setCurrentPage(1);
           }}
+          onSearch={(q) => {
+            setSearchQuery(q);
+            setCurrentPage(1);
+          }}
         />
 
-        {/* Projects table */}
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
@@ -218,7 +151,6 @@ export default function ProjectsPage() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <p className="text-sm text-gray-700">{project.budget.toLocaleString("id-ID", { style: "currency", currency: "IDR" })}</p>
                   </td>
-                  {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatDate(project.startDate)}</td> */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatDate(project.endDate)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <p className="text-sm font-medium text-gray-700">{project.progress}%</p>
@@ -249,6 +181,13 @@ export default function ProjectsPage() {
                   </td>
                 </tr>
               ))}
+              {currentProjects.length === 0 && (
+                <tr>
+                  <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
+                    No projects found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

@@ -5,19 +5,13 @@ import { Search, CheckCircle2, Paperclip, User, X } from "lucide-react";
 import { notify } from "@/components/NotifiactionManager";
 import InputField from "@/components/InputField";
 import TextareaField from "@/components/TextareaField";
+import { usersData, UserData } from "@/data/dummy/user";
 
 const projects = [
   { id: 1, name: "Website Redesign" },
   { id: 2, name: "Mobile App Development" },
   { id: 3, name: "Backend API Migration" },
   { id: 4, name: "Marketing Campaign Launch" },
-];
-
-const reviewerOptions = [
-  { id: 1, name: "Alice Johnson" },
-  { id: 2, name: "Bob Smith" },
-  { id: 3, name: "Charlie Lee" },
-  { id: 4, name: "Dana White" },
 ];
 
 const mockDocument = {
@@ -52,7 +46,7 @@ export default function EditTaskPage() {
 
   const filteredProjects = projects.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  const filteredReviewers = reviewerOptions.filter((r) => r.name.toLowerCase().includes(reviewerSearchQuery.toLowerCase()) && !reviewers.includes(r.id));
+  const filteredReviewers = usersData.filter((r) => r.name.toLowerCase().includes(reviewerSearchQuery.toLowerCase()) && !reviewers.includes(r.id));
 
   const handleReviewerChange = (id: number) => {
     if (reviewers.length >= 2) return;
@@ -117,7 +111,7 @@ export default function EditTaskPage() {
             <div className={`relative ${formErrors.reviewer ? "border-red-500 rounded-lg" : ""}`} ref={reviewerInputRef}>
               <div className={`flex flex-wrap items-center gap-2 p-2 border ${formErrors.reviewer ? "border-red-500" : "border-gray-300"} rounded-lg bg-white`} onClick={() => reviewerInputRef.current?.focus()}>
                 {reviewers.map((id) => {
-                  const member = reviewerOptions.find((r) => r.id === id);
+                  const member = usersData.find((r) => r.id === id);
                   return (
                     <span key={member?.id} className="inline-flex items-center gap-1.5 px-3 py-1 text-sm font-medium text-purple-800 bg-purple-100 rounded-full">
                       <User size={12} className="mr-1" />
@@ -169,7 +163,7 @@ export default function EditTaskPage() {
             placeholder="Add any additional notes or details about the task."
             error={formErrors.notes}
           />
-          <button type="submit" className="btn-primary w-full">
+          <button type="submit" className="btn-secondary w-full">
             Save Changes
           </button>
         </form>

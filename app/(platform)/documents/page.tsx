@@ -6,72 +6,16 @@ import { useRouter } from "next/navigation";
 import { Eye, Pencil, FileText, CheckCircle2, XCircle, Clock } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
-import { formatDate } from "@/utils/dateHelper";
 import Pagination from "@/components/Pagination";
-
-interface Documents {
-  id: number;
-  docNo: string;
-  title: string;
-  project: string;
-  status: "Draft" | "Submitted" | "Approved" | "Rejected";
-  createdBy: string;
-  submittedDate?: string;
-  lastUpdated: string;
-  reviewer?: string;
-}
+import { formatDate } from "@/utils/dateHelper";
+import { documentsData, Document } from "./data";
 
 export default function DocumentsPage() {
   const router = useRouter();
 
-  const documents: Documents[] = [
-    {
-      id: 1,
-      docNo: "DOC-2025-001",
-      title: "Project Brief",
-      project: "PRJ-WEB-202509-001",
-      status: "Approved",
-      createdBy: "Alice",
-      submittedDate: "2025-09-10",
-      lastUpdated: "2025-09-12",
-      reviewer: "Daniel",
-    },
-    {
-      id: 2,
-      docNo: "DOC-2025-002",
-      title: "Contract Client",
-      project: "PRJ-MOB-202509-001",
-      status: "Submitted",
-      createdBy: "Charlie",
-      submittedDate: "2025-09-16",
-      lastUpdated: "2025-09-16",
-      reviewer: undefined,
-    },
-    {
-      id: 3,
-      docNo: "DOC-2025-003",
-      title: "Design Mockup",
-      project: "PRJ-WEB-202509-001",
-      status: "Draft",
-      createdBy: "Bob",
-      submittedDate: undefined,
-      lastUpdated: "2025-09-15",
-      reviewer: undefined,
-    },
-    {
-      id: 4,
-      docNo: "DOC-2025-004",
-      title: "Budget Proposal",
-      project: "PRJ-INT-202509-001",
-      status: "Rejected",
-      createdBy: "Dave",
-      submittedDate: "2025-09-14",
-      reviewer: "Alice Jordania",
-      lastUpdated: "2025-09-15",
-    },
-  ];
+  const documents: Document[] = documentsData;
 
-  const statusStyles: Record<Documents["status"], string> = {
+  const statusStyles: Record<Document["status"], string> = {
     Draft: "bg-gray-100 text-gray-700 border-gray-400",
     Submitted: "bg-yellow-100 text-yellow-700 border-yellow-500",
     Approved: "bg-green-100 text-green-700 border-green-500",
@@ -81,15 +25,27 @@ export default function DocumentsPage() {
   const statusOptions = ["All", "Draft", "Submitted", "Approved", "Rejected"];
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("All");
-  const itemsPerPage = 5;
+  const [searchText, setSearchText] = useState("");
+  const itemsPerPage = 10;
 
-  const filteredDocuments = documents.filter((doc) => statusFilter === "All" || doc.status === statusFilter);
+  const filteredDocuments = documents.filter((doc) => {
+    const matchesStatus = statusFilter === "All" || doc.status === statusFilter;
+    const matchesSearch =
+      doc.docNo.toLowerCase().includes(searchText.toLowerCase()) ||
+      doc.title.toLowerCase().includes(searchText.toLowerCase()) ||
+      doc.project.toLowerCase().includes(searchText.toLowerCase()) ||
+      doc.createdBy.toLowerCase().includes(searchText.toLowerCase()) ||
+      (doc.reviewer && doc.reviewer.toLowerCase().includes(searchText.toLowerCase()));
+
+    return matchesStatus && matchesSearch;
+  });
+
   const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
   const currentDocuments = filteredDocuments.slice(indexOfFirst, indexOfLast);
 
-  const getStatusIcon = (status: Documents["status"]) => {
+  const getStatusIcon = (status: Document["status"]) => {
     switch (status) {
       case "Approved":
         return <CheckCircle2 className="h-3 w-3" />;
@@ -111,6 +67,7 @@ export default function DocumentsPage() {
   const handleEditClick = (docNo: string) => {
     router.push(`/documents/edit/${docNo}`);
   };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       <div className="md:col-span-12 bg-white p-4 sm:p-6 rounded-3xl flex flex-col">
@@ -124,7 +81,12 @@ export default function DocumentsPage() {
             setStatusFilter(value);
             setCurrentPage(1);
           }}
+          onSearch={(value) => {
+            setSearchText(value);
+            setCurrentPage(1); // reset page biar gak mentok
+          }}
         />
+
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
@@ -168,6 +130,7 @@ export default function DocumentsPage() {
             </tbody>
           </table>
         </div>
+
         <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       </div>
     </div>

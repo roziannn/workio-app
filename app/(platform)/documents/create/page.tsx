@@ -3,23 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, CheckCircle2, Paperclip, User, X } from "lucide-react";
 import { notify } from "@/components/NotifiactionManager";
+import { generateDocumentNo } from "@/utils/documentNo";
+import { usersData } from "@/data/dummy/user";
+import { getActiveProjectLOV } from "@/data/dummy/mappers/projectsMapper";
 import InputField from "@/components/InputField";
 import TextareaField from "@/components/TextareaField";
-import { generateDocumentNo } from "@/utils/documentNo";
-
-const projects = [
-  { id: 1, name: "Website Redesign" },
-  { id: 2, name: "Mobile App Development" },
-  { id: 3, name: "Backend API Migration" },
-  { id: 4, name: "Marketing Campaign Launch" },
-];
-
-const reviewerOptions = [
-  { id: 1, name: "Alice Johnson" },
-  { id: 2, name: "Bob Smith" },
-  { id: 3, name: "Charlie Lee" },
-  { id: 4, name: "Dana White" },
-];
+import Pagination from "@/components/Pagination";
 
 export default function NewTaskPage() {
   const [documentNo, setDocumentNo] = useState("");
@@ -33,15 +22,21 @@ export default function NewTaskPage() {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [showReviewerSuggestions, setShowReviewerSuggestions] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
+
   const reviewerInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setDocumentNo(generateDocumentNo(1));
   }, []);
 
-  const filteredProjects = projects.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredProjects = getActiveProjectLOV().filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  const filteredReviewers = reviewerOptions.filter((r) => r.name.toLowerCase().includes(reviewerSearchQuery.toLowerCase()) && !reviewers.includes(r.id));
+  const totalPages = Math.ceil(filteredProjects.length / pageSize);
+  const paginatedProjects = filteredProjects.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const filteredReviewers = usersData.filter((r) => r.name.toLowerCase().includes(reviewerSearchQuery.toLowerCase()) && !reviewers.includes(r.id));
 
   const handleReviewerChange = (id: number) => {
     if (reviewers.length >= 2) return;
@@ -70,15 +65,7 @@ export default function NewTaskPage() {
       return;
     }
 
-    console.log({
-      taskName,
-      reviewers,
-      project,
-      notes,
-      uploadedFile,
-    });
-
-    notify("success", "Task added successfully!");
+    notify("success", "Document created successfully!");
     setTaskName("");
     setReviewers([]);
     setProject(null);
@@ -95,9 +82,7 @@ export default function NewTaskPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <InputField label="Project Number" value={documentNo} onChange={() => {}} placeholder="" type="text" error={formErrors.documentNo} readonly />
-
           <InputField label="Title" value={taskName} onChange={setTaskName} placeholder="e.g., Deploy new API endpoint" error={formErrors.taskName} />
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Upload a file</label>
             <div className="relative flex items-center">
@@ -105,26 +90,16 @@ export default function NewTaskPage() {
               <input
                 type="file"
                 onChange={(e) => setUploadedFile(e.target.files?.[0] || null)}
-                className={`
-                  w-full pl-10 pr-4 py-1 border border-gray-300 rounded-lg
-                  focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent
-                  file:mr-4 file:py-2 file:px-4
-                  file:rounded-md file:border-0
-                  file:text-sm file:font-semibold
-                  file:bg-blue-50 file:text-blue-700
-                  hover:file:bg-blue-100 text-sm text-gray-500
-                `}
+                className="w-full pl-10 pr-4 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 text-sm text-gray-500"
               />
             </div>
           </div>
-
-          {/* Reviewer Multi-Select */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Reviewer</label>
             <div className={`relative ${formErrors.reviewer ? "border-red-500 rounded-lg" : ""}`} ref={reviewerInputRef}>
               <div className={`flex flex-wrap items-center gap-2 p-2 border ${formErrors.reviewer ? "border-red-500" : "border-gray-300"} rounded-lg bg-white`} onClick={() => reviewerInputRef.current?.focus()}>
                 {reviewers.map((id) => {
-                  const member = reviewerOptions.find((r) => r.id === id);
+                  const member = usersData.find((r) => r.id === id);
                   return (
                     <span key={member?.id} className="inline-flex items-center gap-1.5 px-3 py-1 text-sm font-medium text-purple-800 bg-purple-100 rounded-full">
                       <User size={12} className="mr-1" />
@@ -149,7 +124,7 @@ export default function NewTaskPage() {
               </div>
 
               {showReviewerSuggestions && reviewers.length < 2 && (
-                <div className="absolute z-10 w-full mt-1 bg-white borderborder-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                   {filteredReviewers.length > 0 ? (
                     filteredReviewers.map((member) => (
                       <div key={member.id} className="flex items-center p-3 cursor-pointer hover:bg-gray-100" onClick={() => handleReviewerChange(member.id)}>
@@ -165,7 +140,6 @@ export default function NewTaskPage() {
             </div>
             {formErrors.reviewer && <p className="text-red-500 text-xs mt-1">{formErrors.reviewer}</p>}
           </div>
-
           <TextareaField
             label="Notes"
             value={notes}
@@ -176,23 +150,24 @@ export default function NewTaskPage() {
             placeholder="Add any additional notes or details about the task."
             error={formErrors.notes}
           />
-
-          <button type="submit" className="btn-primary w-full">
+          <button type="submit" className="btn-secondary w-full">
             Save Document
           </button>
         </form>
       </div>
 
-      {/* Project Selection */}
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl">
-        <h3 className="text-xl font-semibold mb-2">Add Task to Project</h3>
-        <p className="text-sm text-gray-500 mb-5">Select a project to add this new task to.</p>
+        <h3 className="text-xl font-semibold mb-2">Add Document to Project</h3>
+        <p className="text-sm text-gray-500 mb-5">Select a project to add this new document to.</p>
         <label className="mb-1">Search</label>
         <div className="relative">
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
             placeholder="Search project..."
             className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${formErrors.project ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-indigo-500"}`}
           />
@@ -201,7 +176,7 @@ export default function NewTaskPage() {
         {formErrors.project && <p className="text-red-500 text-xs mt-1">{formErrors.project}</p>}
 
         <div className="space-y-4 mt-6">
-          {filteredProjects.map((p) => (
+          {paginatedProjects.map((p) => (
             <div
               key={p.id}
               className={`flex items-center justify-between p-4 rounded-lg cursor-pointer transition-colors ${project === p.id ? "bg-indigo-100 border-indigo-500 border-2" : "bg-gray-50 hover:bg-gray-100 border border-transparent"}`}
@@ -215,6 +190,7 @@ export default function NewTaskPage() {
             </div>
           ))}
         </div>
+        {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
       </div>
     </div>
   );

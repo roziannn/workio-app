@@ -7,7 +7,7 @@ import Badge from "@/components/Badge";
 import Modal from "@/components/Modal";
 import InputField from "@/components/InputField";
 import ToggleSwitch from "@/components/Toggle";
-import Pagination from "@/components/Pagination"; // 🔥 import Pagination component
+import Pagination from "@/components/Pagination";
 import { notify } from "@/components/NotifiactionManager";
 
 interface Role {
@@ -17,10 +17,12 @@ interface Role {
 }
 
 const initialRoles: Role[] = [
-  { id: 1, name: "Admin", status: "Active" },
-  { id: 2, name: "Project Manager", status: "Active" },
-  { id: 3, name: "Frontend Developer", status: "Active" },
-  { id: 4, name: "Backend Developer", status: "Inactive" },
+  { id: 1, name: "Programmer", status: "Active" },
+  { id: 2, name: "IT Lead", status: "Active" },
+  { id: 3, name: "Developer", status: "Active" },
+  { id: 5, name: "Senior Developer", status: "Active" },
+  { id: 6, name: "Administrator", status: "Inactive" },
+  { id: 7, name: "Architect/Designer", status: "Active" },
 ];
 
 export default function RolePage() {
@@ -36,7 +38,7 @@ export default function RolePage() {
   const [status, setStatus] = useState<Role["status"]>("Active");
   const [errors, setErrors] = useState<{ name?: string }>({});
 
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
   const filterOptions = ["All", "Active", "Inactive"];
   const filteredRoles = statusFilter === "All" ? roleList : roleList.filter((r) => r.status === statusFilter);
 
@@ -50,7 +52,6 @@ export default function RolePage() {
     Inactive: "bg-red-100 text-red-700 border-red-500",
   };
 
-  // Reset form
   const resetForm = () => {
     setName("");
     setStatus("Active");

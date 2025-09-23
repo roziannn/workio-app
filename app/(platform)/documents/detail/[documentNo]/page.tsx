@@ -150,7 +150,7 @@ export default function DocumentDetailPage() {
 
   return (
     <div className="bg-white rounded-3xl p-6 relative">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center mb-6">
         <div className="flex items-center space-x-4">
           <div className="p-4 rounded-full bg-gray-100">
             <FileText className="h-5 w-5 text-indigo-600" />
@@ -160,13 +160,8 @@ export default function DocumentDetailPage() {
             <p className="text-sm text-gray-500">{document.documentNo}</p>
           </div>
         </div>
-
-        <button onClick={() => router.push("/documents")} className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition">
-          Back
-        </button>
       </div>
 
-      {/* Document Info*/}
       <h2 className="text-lg font-semibold text-gray-800 mb-2">Document Info</h2>
       <div className="rounded-xl grid grid-cols-1 md:grid-cols-2 divide-x divide-dashed divide-gray-400 mb-4">
         <div>
@@ -207,7 +202,6 @@ export default function DocumentDetailPage() {
           ))}
         </div>
 
-        {/*  Notes */}
         <div className="p-3">
           <h2 className="text-lg font-semibold text-gray-800 mb-2">Notes</h2>
           <p className="text-gray-700 flex items-start">{document.notes}</p>
@@ -219,7 +213,6 @@ export default function DocumentDetailPage() {
         <HistoryList documentNo={document.documentNo} histories={mockHistories} />
       </div>
 
-      {/* Action Buttons */}
       <div className="flex justify-end space-x-3">
         <button onClick={handleApprove} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center">
           <ThumbsUp size={16} className="mr-1" /> Approve
@@ -232,7 +225,6 @@ export default function DocumentDetailPage() {
         </button>
       </div>
 
-      {/* Comment Drawer */}
       <CommentDrawer isOpen={isCommentOpen} documentNo={document.documentNo} onClose={() => setIsCommentOpen(false)} />
 
       <Modal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} title="Upload New Version">
