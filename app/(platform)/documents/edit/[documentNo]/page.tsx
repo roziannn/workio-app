@@ -5,7 +5,8 @@ import { Search, CheckCircle2, Paperclip, User, X } from "lucide-react";
 import { notify } from "@/components/NotifiactionManager";
 import InputField from "@/components/InputField";
 import TextareaField from "@/components/TextareaField";
-import { usersData, UserData } from "@/data/dummy/user";
+import { usersData } from "@/data/dummy/user";
+import LoadingSpinner from "@/components/Loading";
 
 const projects = [
   { id: 1, name: "Website Redesign" },
@@ -33,19 +34,24 @@ export default function EditTaskPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [showReviewerSuggestions, setShowReviewerSuggestions] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // ⬅️ state loading
 
   const reviewerInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setDocumentNo(mockDocument.documentNo);
-    setTaskName(mockDocument.taskName);
-    setProject(mockDocument.project);
-    setReviewers(mockDocument.reviewers);
-    setNotes(mockDocument.notes);
+    const timer = setTimeout(() => {
+      setDocumentNo(mockDocument.documentNo);
+      setTaskName(mockDocument.taskName);
+      setProject(mockDocument.project);
+      setReviewers(mockDocument.reviewers);
+      setNotes(mockDocument.notes);
+      setIsLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const filteredProjects = projects.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
-
   const filteredReviewers = usersData.filter((r) => r.name.toLowerCase().includes(reviewerSearchQuery.toLowerCase()) && !reviewers.includes(r.id));
 
   const handleReviewerChange = (id: number) => {
@@ -61,7 +67,7 @@ export default function EditTaskPage() {
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    if (!taskName) errors.taskName = "Task name is required.";
+    if (!taskName) errors.taskName = "Document name is required.";
     if (reviewers.length === 0) errors.reviewer = "At least 1 reviewer is required.";
     if (project === null) errors.project = "Please select a project.";
     setFormErrors(errors);
@@ -74,10 +80,10 @@ export default function EditTaskPage() {
       notify("error", "Please fill in all required fields.");
       return;
     }
-
-    notify("success", "Task updated successfully!");
+    notify("success", "Document updated successfully!");
   };
 
+  if (isLoading) return <LoadingSpinner />;
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl space-y-6">
@@ -87,8 +93,9 @@ export default function EditTaskPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <InputField label="Document Number" value={documentNo} onChange={() => {}} type="text" readonly />
 
-          <InputField label="Title" value={taskName} onChange={setTaskName} placeholder="e.g., Deploy new API endpoint" error={formErrors.taskName} />
+          <InputField label="Title" value={taskName} onChange={setTaskName} placeholder="e.g., File Design System" error={formErrors.taskName} />
 
+          {/* Upload file */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Upload a file</label>
             <div className="relative flex items-center">
@@ -96,16 +103,12 @@ export default function EditTaskPage() {
               <input
                 type="file"
                 onChange={(e) => setUploadedFile(e.target.files?.[0] || null)}
-                className={`
-                  w-full pl-10 pr-4 py-1 border border-gray-300 rounded-lg 
-                  focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent
-                  file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
-                  file:text-sm file:font-semiboldfile:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 text-sm text-gray-500
-                `}
+                className="w-full pl-10 pr-4 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 text-sm text-gray-500"
               />
             </div>
           </div>
 
+          {/* Reviewer */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Reviewer</label>
             <div className={`relative ${formErrors.reviewer ? "border-red-500 rounded-lg" : ""}`} ref={reviewerInputRef}>
@@ -160,7 +163,7 @@ export default function EditTaskPage() {
               setNotes(val);
               setFormErrors((prev) => ({ ...prev, notes: "" }));
             }}
-            placeholder="Add any additional notes or details about the task."
+            placeholder="Add any additional notes or details about the document."
             error={formErrors.notes}
           />
           <button type="submit" className="btn-secondary w-full">
@@ -169,6 +172,7 @@ export default function EditTaskPage() {
         </form>
       </div>
 
+      {/* Change project */}
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl">
         <h3 className="text-xl font-semibold mb-2">Change Project</h3>
         <p className="text-sm text-gray-500 mb-5">Select a new project if needed.</p>

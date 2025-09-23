@@ -51,7 +51,7 @@ export default function NewTaskPage() {
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    if (!taskName) errors.taskName = "Task name is required.";
+    if (!taskName) errors.taskName = "Document name is required.";
     if (reviewers.length === 0) errors.reviewer = "At least 1 reviewer is required.";
     if (project === null) errors.project = "Please select a project.";
     setFormErrors(errors);
@@ -82,7 +82,7 @@ export default function NewTaskPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <InputField label="Project Number" value={documentNo} onChange={() => {}} placeholder="" type="text" error={formErrors.documentNo} readonly />
-          <InputField label="Title" value={taskName} onChange={setTaskName} placeholder="e.g., Deploy new API endpoint" error={formErrors.taskName} />
+          <InputField label="Title" value={taskName} onChange={setTaskName} placeholder="e.g., File Design System" error={formErrors.taskName} />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Upload a file</label>
             <div className="relative flex items-center">

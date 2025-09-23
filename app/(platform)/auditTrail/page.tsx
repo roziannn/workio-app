@@ -1,23 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { Download } from "lucide-react";
 import { formatDateTime } from "@/utils/dateHelper";
 import Pagination from "@/components/Pagination";
 import Modal from "@/components/Modal";
 import InputField from "@/components/InputField";
+import DataListHeader from "@/components/DataListHeader";
 import { auditTrailData } from "./data";
 
 export default function AuditTrailPage() {
   const [auditList] = useState(auditTrailData);
   const [currentPage, setCurrentPage] = useState(1);
-  const [statusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
   const [showModal, setShowModal] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [searchText, setSearchText] = useState("");
 
   const itemsPerPage = 10;
-  const filteredAudits = statusFilter === "All" ? auditList : auditList.filter((a) => a.status === statusFilter);
+
+  const filteredAudits = auditList.filter((a) => {
+    const matchesStatus = statusFilter === "All" || a.status === statusFilter;
+    const matchesSearch = a.user.toLowerCase().includes(searchText.toLowerCase()) || a.action.toLowerCase().includes(searchText.toLowerCase()) || a.module.toLowerCase().includes(searchText.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
 
   const totalPages = Math.ceil(filteredAudits.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
@@ -33,17 +39,26 @@ export default function AuditTrailPage() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       <div className="md:col-span-12 bg-white p-4 sm:p-6 rounded-3xl flex flex-col">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-800">Audit Trail</h2>
-          <button onClick={handleExport} className="flex items-center px-4 py-2 bg-green-500 hover:bg-green-700 text-white rounded-lg text-sm font-medium">
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </button>
-        </div>
+        <DataListHeader
+          title="Audit Trail"
+          total={auditList.length}
+          onImport={handleExport}
+          filterOptions={["All", "Success", "Failed"]}
+          selectedFilter={statusFilter}
+          onFilterChange={(val) => {
+            setStatusFilter(val);
+            setCurrentPage(1);
+          }}
+          onSearch={(val) => {
+            setSearchText(val);
+            setCurrentPage(1);
+          }}
+          isBtnAddNew={false}
+        />
 
         <div className="overflow-x-auto mt-4">
           <table className="min-w-full">
-            <thead>
+            <thead className="bg-slate-100">
               <tr>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">User</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
@@ -72,7 +87,11 @@ export default function AuditTrailPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
         <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+
+        {/* Modal Export */}
         <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Export Audit Trail">
           <InputField label="Start Date" type="date" value={startDate} onChange={setStartDate} />
           <InputField label="End Date" type="date" value={endDate} onChange={setEndDate} />

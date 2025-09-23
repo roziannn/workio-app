@@ -11,6 +11,7 @@ import Modal from "@/components/Modal";
 import InputField from "@/components/InputField";
 import CommentDrawer from "./comment-drawer";
 import HistoryList from "./history-list";
+import LoadingSpinner from "@/components/Loading";
 
 type Status = "Active" | "Inactive" | "Completed";
 
@@ -130,15 +131,7 @@ export default function DocumentDetailPage() {
     notify("success", "Document approved successfully!");
   };
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center h-96">
-        <div className="flex flex-col items-center space-y-4 backdrop-blur-md animate-fadeIn">
-          <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-lg font-medium text-gray-700 animate-pulse">Loading data...</p>
-        </div>
-      </div>
-    );
+  if (isLoading) return <LoadingSpinner />;
 
   if (!document) return null;
 

@@ -18,9 +18,8 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
   return (
     <div className="flex min-h-screen flex-col md:flex-row rounded-2xl-l">
       <Sidebar />
-
       <div className="flex-1 flex flex-col">
-        <header className="flex items-center justify-between bg-white p-5 m-6 rounded-2xl shadow-sm">
+        <header className="flex items-center justify-between bg-white p-5 m-5 lg:m-6 rounded-2xl">
           <nav className="text-gray-600 text-sm flex items-center space-x-2">
             {segments.map((segment, index) => {
               const href = "/" + segments.slice(0, index + 1).join("/");
@@ -52,7 +51,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
           </div>
         </header>
 
-        <main className="flex-1 px-6">
+        <main className="flex-1 px-5 lg:px-6">
           {children}
           <NotificationManager />
         </main>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Box, ChevronDownCircle, ChevronRightCircle, FileText, ListCheck, LucideIcon, Shield, User } from "lucide-react";
+import { Box, ChevronDownCircle, ChevronRightCircle, FileText, ListCheck, LucideIcon, Shield } from "lucide-react";
 import { Home, Users, CheckSquare, Folder, BarChart2, BoxIcon, Settings, LogOut, Menu, X } from "lucide-react";
 
 interface NavItem {
@@ -90,7 +90,7 @@ export default function Sidebar() {
     <>
       {/* MOBILE TOPBAR */}
       <div className="md:hidden sticky top-0 z-50 bg-white shadow flex justify-between items-center px-4 py-3">
-        <Image src="/logo.png" alt="Workio Logo" width={60} height={60} />
+        <Image src="/logo.png" alt="Workio Logo" width={90} height={90} />
         <button onClick={toggleSidebar} className="p-2 rounded-full hover:bg-gray-100 transition">
           {open ? <X size={20} /> : <Menu size={20} />}
         </button>
