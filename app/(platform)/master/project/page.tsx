@@ -15,14 +15,14 @@ interface Category {
   name: string;
   status: "Active" | "Inactive";
   icon: "Monitor" | "Smartphone" | "Wrench";
+  createdAt: string;
 }
 
 const categories: Category[] = [
-  { id: 1, name: "Web App", status: "Active", icon: "Monitor" },
-  { id: 2, name: "Mobile App", status: "Active", icon: "Smartphone" },
-  { id: 3, name: "Internal Tool", status: "Inactive", icon: "Wrench" },
+  { id: 1, name: "Web App", status: "Active", icon: "Monitor", createdAt: "2025-01-01" },
+  { id: 2, name: "Mobile App", status: "Active", icon: "Smartphone", createdAt: "2025-02-01" },
+  { id: 3, name: "Internal Tool", status: "Inactive", icon: "Wrench", createdAt: "2025-03-01" },
 ];
-
 const iconOptions: Category["icon"][] = ["Monitor", "Smartphone", "Wrench"];
 
 export default function ProjectCategoryPage() {
@@ -83,6 +83,7 @@ export default function ProjectCategoryPage() {
         name,
         status,
         icon: validIcon,
+        createdAt: new Date().toISOString(),
       };
       setCategoryList([newCategory, ...categoryList]);
       notify("success", "Project Category added successfully!");

@@ -56,7 +56,7 @@ export default function AuditTrailPage() {
           isBtnAddNew={false}
         />
 
-        <div className="overflow-x-auto mt-4">
+        <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead className="bg-slate-100">
               <tr>
@@ -69,7 +69,7 @@ export default function AuditTrailPage() {
             </thead>
             <tbody>
               {currentAudits.map((audit) => (
-                <tr key={audit.id} className="mb-2 border-b border-gray-200">
+                <tr key={audit.id} className="mb-2 border-b border-slate-200">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{audit.user}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{audit.action}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{audit.module}</td>

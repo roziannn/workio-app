@@ -51,7 +51,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
           </div>
         </header>
 
-        <main className="flex-1 px-5 lg:px-6">
+        <main className="flex-1 px-5 pb-5 lg:px-6 lg:pb-6">
           {children}
           <NotificationManager />
         </main>

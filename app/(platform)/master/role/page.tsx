@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle, EditIcon } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 import Modal from "@/components/Modal";
@@ -9,20 +9,23 @@ import InputField from "@/components/InputField";
 import ToggleSwitch from "@/components/Toggle";
 import Pagination from "@/components/Pagination";
 import { notify } from "@/components/NotifiactionManager";
+import { formatDate } from "@/utils/dateHelper";
 
 interface Role {
   id: number;
   name: string;
   status: "Active" | "Inactive";
+  createdAt: string;
+  createdBy: string;
 }
 
 const initialRoles: Role[] = [
-  { id: 1, name: "Programmer", status: "Active" },
-  { id: 2, name: "IT Lead", status: "Active" },
-  { id: 3, name: "Developer", status: "Active" },
-  { id: 5, name: "Senior Developer", status: "Active" },
-  { id: 6, name: "Administrator", status: "Inactive" },
-  { id: 7, name: "Architect/Designer", status: "Active" },
+  { id: 1, name: "Programmer", status: "Active", createdAt: "2025-01-01", createdBy: "System" },
+  { id: 2, name: "IT Lead", status: "Active", createdAt: "2025-02-01", createdBy: "System" },
+  { id: 3, name: "Developer", status: "Active", createdAt: "2025-03-01", createdBy: "System" },
+  { id: 5, name: "Senior Developer", status: "Active", createdAt: "2025-04-01", createdBy: "System" },
+  { id: 6, name: "Administrator", status: "Inactive", createdAt: "2025-05-01", createdBy: "System" },
+  { id: 7, name: "Architect/Designer", status: "Active", createdAt: "2025-06-01", createdBy: "System" },
 ];
 
 export default function RolePage() {
@@ -78,12 +81,11 @@ export default function RolePage() {
         id: roleList.length + 1,
         name,
         status,
+        createdAt: new Date().toISOString(),
+        createdBy: "System",
       };
       setRoleList([newRole, ...roleList]);
       notify("success", "Role added successfully!");
-    } else if (modalMode === "edit" && editingRoleId !== null) {
-      setRoleList(roleList.map((r) => (r.id === editingRoleId ? { ...r, name, status } : r)));
-      notify("success", "Role updated successfully!");
     }
 
     resetForm();
@@ -119,39 +121,33 @@ export default function RolePage() {
 
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead>
+            <thead className="bg-slate-100">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Role Name</th>
-                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Role Name</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Created At</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Created By</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody>
               {currentRoles.map((role) => (
-                <tr key={role.id} className="bg-white hover:bg-gray-50 rounded-2xl mb-2">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">{role.name}</td>
-
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                <tr key={role.id} className="mb-2 border-b border-slate-200">
+                  <td className="px-5 py-3 text-sm text-gray-800">{role.name}</td>
+                  <td className="px-5 py-3 text-sm">
                     <Badge colorClass={statusStyles[role.status]} icon={role.status === "Active" ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
                       {role.status}
                     </Badge>
                   </td>
-
-                  <td className="px-6 py-4 whitespace-nowrap text-right flex justify-end space-x-2">
-                    <button onClick={() => handleEditRole(role)} className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
-                      <Pencil size={16} />
+                  <td className="px-5 py-3 text-sm text-gray-700">{formatDate(role.createdAt)}</td>
+                  <td className="px-5 py-3 text-sm text-gray-700">{role.createdBy}</td>
+                  <td className="px-5 py-3 text-sm flex space-x-2">
+                    <button onClick={() => handleEditRole(role)} className="p-2 rounded-lg hover:bg-slate-200 text-gray-700">
+                      <EditIcon size={16} />
                     </button>
                   </td>
                 </tr>
               ))}
-
-              {currentRoles.length === 0 && (
-                <tr>
-                  <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">
-                    No roles found.
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>

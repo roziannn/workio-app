@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { Eye, Pencil, CheckCircle2, XCircle, Monitor, Smartphone, Wrench, Flag } from "lucide-react";
+import { Eye, CheckCircle2, XCircle, Monitor, Smartphone, Wrench, MoreHorizontal, Edit3 } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 import { formatDate } from "@/utils/dateHelper";
@@ -35,12 +35,6 @@ export default function ProjectsPage() {
     Completed: "bg-blue-100 text-blue-700 border-blue-500",
   };
 
-  const priorityStyles: Record<Project["priority"], string> = {
-    High: "bg-red-100 text-red-700 border-red-500",
-    Medium: "bg-yellow-100 text-yellow-700 border-yellow-500",
-    Low: "bg-green-100 text-green-700 border-green-500",
-  };
-
   const statusOptions = ["All", "Active", "Inactive", "Completed"];
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -61,6 +55,8 @@ export default function ProjectsPage() {
   const indexOfFirst = indexOfLast - itemsPerPage;
   const currentProjects = filteredProjects.slice(indexOfFirst, indexOfLast);
 
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
   const handleAddNewClick = () => {
     router.push("/projects/create");
   };
@@ -78,19 +74,19 @@ export default function ProjectsPage() {
       case "Web App":
         return (
           <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100">
-            <Monitor className="h-5 w-5 text-blue-600" />
+            <Monitor className="h-5 w-5 text-slate-500" />
           </div>
         );
       case "Mobile App":
         return (
           <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100">
-            <Smartphone className="h-5 w-5 text-green-500" />
+            <Smartphone className="h-5 w-5 text-slate-500" />
           </div>
         );
       case "Internal Tool":
         return (
           <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100">
-            <Wrench className="h-5 w-5 text-purple-600" />
+            <Wrench className="h-5 w-5 text-slate-500" />
           </div>
         );
       default:
@@ -119,51 +115,51 @@ export default function ProjectsPage() {
 
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead>
+            <thead className="bg-slate-100">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Project No.</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Client</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Budget</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">DueDate</th>
-                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Progress</th>
-                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Priority</th>
-                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 sticky right-0 bg-white z-10">Actions</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Project No.</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Client</th>
+                {/* <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Budget</th> */}
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">DueDate</th>
+                <th className="px-5 py-3 text-center text-sm font-semibold text-gray-700">Progress</th>
+                {/* <th className="px-5 py-3 text-center text-sm font-semibold text-gray-700">Priority</th> */}
+                <th className="px-5 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
+                <th className="px-5 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody>
               {currentProjects.map((project) => (
-                <tr key={project.id}>
-                  <td className="px-6 py-4 whitespace-nowrap flex items-center space-x-3">
+                <tr key={project.id} className="mb-2 border-b border-slate-200">
+                  <td className="px-5 py-4 whitespace-nowrap flex items-center space-x-3">
                     {getCategoryIcon(project.category)}
                     <div className="flex flex-col">
                       <span className="text-sm font-semibold text-gray-800">{project.name}</span>
                       <span className="text-xs text-gray-500 w-48 truncate">{project.description}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-5 py-4 whitespace-nowrap">
                     <p className="text-sm text-gray-700">{project.projectNo}</p>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-5 py-4 whitespace-nowrap">
                     <p className="text-sm text-gray-700">{project.client}</p>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  {/* <td className="px-5 py-4 whitespace-nowrap">
                     <p className="text-sm text-gray-700">{project.budget.toLocaleString("id-ID", { style: "currency", currency: "IDR" })}</p>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatDate(project.endDate)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                  </td> */}
+                  <td className="px-5 py-4 whitespace-nowrap text-sm text-gray-700">{formatDate(project.endDate)}</td>
+                  <td className="px-5 py-4 whitespace-nowrap text-center">
                     <p className="text-sm font-medium text-gray-700">{project.progress}%</p>
                     <div className="w-16 bg-gray-200 rounded-full h-1.5 mt-1">
                       <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: `${project.progress}%` }}></div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                  {/* <td className="px-5 py-4 whitespace-nowrap text-center">
                     <Badge colorClass={priorityStyles[project.priority]} icon={<Flag size={12} />}>
                       {project.priority}
                     </Badge>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                  </td> */}
+                  <td className="px-5 py-4 whitespace-nowrap text-center">
                     <Badge
                       colorClass={statusStyles[project.status]}
                       icon={project.status === "Active" ? <CheckCircle2 className="h-3 w-3" /> : project.status === "Inactive" ? <XCircle className="h-3 w-3" /> : <CheckCircle2 className="h-3 w-3" />}
@@ -171,19 +167,41 @@ export default function ProjectsPage() {
                       {project.status}
                     </Badge>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right flex justify-end space-x-2 sticky right-0 bg-white z-10">
-                    <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700" onClick={() => handleDetailClick(project.projectNo)}>
-                      <Eye size={16} />
+                  <td className="px-5 py-3 whitespace-nowrap text-left relative">
+                    <button className="p-2 rounded-lg hover:bg-slate-200 text-gray-700" onClick={() => setOpenDropdown(openDropdown === project.projectNo ? null : project.projectNo)}>
+                      <MoreHorizontal size={16} />
                     </button>
-                    <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700 flex items-center justify-center" onClick={() => handleEditClick(project.projectNo)}>
-                      <Pencil size={16} />
-                    </button>
+
+                    {openDropdown === project.projectNo && (
+                      <div className="absolute left-0 mt-2 w-28 bg-white border border-gray-200 rounded-lg shadow-sm z-10 flex flex-col">
+                        <button
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                          onClick={() => {
+                            handleEditClick(project.projectNo);
+                            setOpenDropdown(null);
+                          }}
+                        >
+                          <Edit3 size={14} />
+                          <span className="ml-2">Edit</span>
+                        </button>
+                        <button
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                          onClick={() => {
+                            handleDetailClick(project.projectNo);
+                            setOpenDropdown(null);
+                          }}
+                        >
+                          <Eye size={14} />
+                          <span className="ml-2">Detail</span>
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
               {currentProjects.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={9} className="px-5 py-4 text-center text-gray-500">
                     No projects found.
                   </td>
                 </tr>

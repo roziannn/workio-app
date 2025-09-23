@@ -45,7 +45,7 @@ interface Task {
 const mockProjects: Project[] = [
   {
     id: 1,
-    projectNo: "PRJ-WEB-202509-001",
+    projectNo: "PRJ-WEB-202501-001",
     name: "Customer Portal Revamp",
     description: "Redesigning and rebuilding the user-facing customer portal with new features.",
     owner: "Alice Johnson",

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { Eye, Pencil, FileText, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, MoreHorizontal, Eye, Edit3 } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 import Pagination from "@/components/Pagination";
@@ -45,6 +45,8 @@ export default function DocumentsPage() {
   const indexOfFirst = indexOfLast - itemsPerPage;
   const currentDocuments = filteredDocuments.slice(indexOfFirst, indexOfLast);
 
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+
   const getStatusIcon = (status: Document["status"]) => {
     switch (status) {
       case "Approved":
@@ -54,7 +56,7 @@ export default function DocumentsPage() {
       case "Submitted":
         return <Clock className="h-3 w-3" />;
       default:
-        return <FileText className="h-3 w-3" />;
+        return <XCircle className="h-3 w-3" />;
     }
   };
 
@@ -83,47 +85,66 @@ export default function DocumentsPage() {
           }}
           onSearch={(value) => {
             setSearchText(value);
-            setCurrentPage(1); // reset page biar gak mentok
+            setCurrentPage(1);
           }}
         />
 
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead>
+            <thead className="bg-slate-100">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Doc. No</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Project No.</th>
-                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Reviewer</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">CreatedBy</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Submitted</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Updated</th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Doc. No</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Project No.</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                {/* <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Reviewer</th> */}
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">CreatedBy</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Submitted</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody>
               {currentDocuments.map((doc) => (
-                <tr key={doc.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.docNo}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">{doc.title}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.project}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                <tr key={doc.id} className="mb-2 border-b border-slate-200">
+                  <td className="px-5 py-3 whitespace-nowrap text-sm text-gray-700">{doc.docNo}</td>
+                  <td className="px-5 py-3 whitespace-nowrap text-sm font-semibold text-gray-800">{doc.title}</td>
+                  <td className="px-5 py-3 whitespace-nowrap text-sm text-gray-700">{doc.project}</td>
+                  <td className="px-5 py-3 whitespace-nowrap">
                     <Badge colorClass={statusStyles[doc.status]} icon={getStatusIcon(doc.status)}>
                       {doc.status}
                     </Badge>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.status === "Approved" || doc.status === "Rejected" ? doc.reviewer || "-" : "-"}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.createdBy}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{doc.submittedDate ? formatDate(doc.submittedDate) : "-"}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatDate(doc.lastUpdated)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right flex justify-end space-x-2">
-                    <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700" onClick={() => handleDetailClick(doc.docNo)}>
-                      <Eye size={16} />
+                  <td className="px-5 py-3 whitespace-nowrap text-sm text-gray-700">{doc.createdBy}</td>
+                  <td className="px-5 py-3 whitespace-nowrap text-sm text-gray-700">{doc.submittedDate ? formatDate(doc.submittedDate) : "-"}</td>
+                  <td className="px-5 py-3 whitespace-nowrap text-left relative">
+                    <button className="p-2 rounded-lg hover:bg-slate-200 text-gray-700" onClick={() => setOpenDropdown(openDropdown === doc.id ? null : doc.id)}>
+                      <MoreHorizontal size={16} />
                     </button>
-                    <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700" onClick={() => handleEditClick(doc.docNo)}>
-                      <Pencil size={16} />
-                    </button>
+
+                    {openDropdown === doc.id && (
+                      <div className="absolute left-0 mt-2 w-28 bg-white border border-gray-200 rounded-lg shadow-sm z-10 flex flex-col">
+                        <button
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                          onClick={() => {
+                            handleEditClick(doc.docNo);
+                            setOpenDropdown(null);
+                          }}
+                        >
+                          <Edit3 size={14} />
+                          <span className="ml-2">Edit</span>
+                        </button>
+                        <button
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                          onClick={() => {
+                            handleDetailClick(doc.docNo);
+                            setOpenDropdown(null);
+                          }}
+                        >
+                          <Eye size={14} />
+                          <span className="ml-2">Detail</span>
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

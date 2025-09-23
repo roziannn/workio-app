@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, Pencil, CheckCircle2, XCircle } from "lucide-react";
+import { Eye, CheckCircle2, XCircle, MoreHorizontal, Edit3 } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 import Pagination from "@/components/Pagination";
 import { usersData } from "@/data/dummy/user";
-import Link from "next/link";
 
 export default function TeamsPage() {
   const router = useRouter();
@@ -35,8 +34,18 @@ export default function TeamsPage() {
 
   const filterOptions = ["All", "Active", "Inactive"];
 
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+
   const handleAddNewClick = () => {
     router.push("/teams/create");
+  };
+
+  const handleEditClick = (id: number) => {
+    router.push(`/teams/edit/${id}`);
+  };
+
+  const handleDetailClick = (id: number) => {
+    router.push(`/teams/detail/${id}`);
   };
 
   return (
@@ -59,21 +68,21 @@ export default function TeamsPage() {
           }}
         />
 
-        <div className="overflow-x-auto mt-4">
+        <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead>
+            <thead className="bg-slate-100">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Job Level</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tasks</th>
-                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Job Level</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Tasks</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody>
               {currentPeople.map((person) => (
-                <tr key={person.id} className="mb-2">
-                  <td className="px-6 py-4 whitespace-nowrap flex items-center space-x-4">
+                <tr key={person.id} className="mb-2 border-b border-slate-200">
+                  <td className="px-5 py-4 whitespace-nowrap flex items-center space-x-4">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF0B55] to-[#FF8225] flex items-center justify-center text-white font-bold">{person.name.charAt(0)}</div>
                     <div>
                       <p className="text-sm font-semibold text-gray-800">{person.name}</p>
@@ -81,30 +90,49 @@ export default function TeamsPage() {
                     </div>
                   </td>
 
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-5 py-4 whitespace-nowrap">
                     <p className="text-sm font-semibold text-gray-800">{person.role}</p>
                     <p className="text-xs text-gray-500">{person.unit}</p>
                   </td>
 
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{person.tasks.length} assigned</td>
+                  <td className="px-5 py-4 whitespace-nowrap text-sm text-gray-800">{person.tasks.length} assigned</td>
 
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                  <td className="px-5 py-4 whitespace-nowrap">
                     <Badge colorClass={personStatusStyles[person.status]} icon={person.status === "Active" ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
                       {person.status}
                     </Badge>
                   </td>
 
-                  <td className="px-6 py-4 whitespace-nowrap text-right flex justify-end space-x-2">
-                    <Link href={`/teams/detail/${person.id}`}>
-                      <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
-                        <Eye size={16} />
-                      </button>
-                    </Link>
-                    <Link href={`/teams/edit/${person.id}`}>
-                      <button className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
-                        <Pencil size={16} />
-                      </button>
-                    </Link>
+                  <td className="px-5 py-4 whitespace-nowrap relative">
+                    <button className="p-2 rounded-lg hover:bg-slate-200 text-gray-700" onClick={() => setOpenDropdown(openDropdown === person.id ? null : person.id)}>
+                      <MoreHorizontal size={16} />
+                    </button>
+
+                    {openDropdown === person.id && (
+                      <div className="absolute left-0 mt-2 w-28 bg-white border border-gray-200 rounded-lg shadow-sm z-10 flex flex-col">
+                        <button
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                          onClick={() => {
+                            handleEditClick(person.id);
+                            setOpenDropdown(null);
+                          }}
+                        >
+                          <Edit3 size={14} />
+                          <span className="ml-2">Edit</span>
+                        </button>
+
+                        <button
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                          onClick={() => {
+                            handleDetailClick(person.id);
+                            setOpenDropdown(null);
+                          }}
+                        >
+                          <Eye size={14} />
+                          <span className="ml-2">Detail</span>
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

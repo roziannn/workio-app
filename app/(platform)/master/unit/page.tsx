@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle, EditIcon } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 import Modal from "@/components/Modal";
@@ -9,18 +9,21 @@ import InputField from "@/components/InputField";
 import ToggleSwitch from "@/components/Toggle";
 import Pagination from "@/components/Pagination";
 import { notify } from "@/components/NotifiactionManager";
+import { formatDate } from "@/utils/dateHelper";
 
 interface Unit {
   id: number;
   name: string;
   status: "Active" | "Inactive";
+  createdAt: string;
+  createdBy: string;
 }
 
 const initialUnits: Unit[] = [
-  { id: 1, name: "Frontend Developer", status: "Active" },
-  { id: 2, name: "Backend Developer", status: "Active" },
-  { id: 3, name: "UI/UX Designer", status: "Inactive" },
-  { id: 4, name: "QA Engineer", status: "Active" },
+  { id: 1, name: "Frontend Developer", status: "Active", createdAt: "2025-01-01", createdBy: "System" },
+  { id: 2, name: "Backend Developer", status: "Active", createdAt: "2025-02-01", createdBy: "System" },
+  { id: 3, name: "UI/UX Designer", status: "Inactive", createdAt: "2025-03-01", createdBy: "System" },
+  { id: 4, name: "QA Engineer", status: "Active", createdAt: "2025-04-01", createdBy: "System" },
 ];
 
 export default function UnitPage() {
@@ -76,6 +79,8 @@ export default function UnitPage() {
         id: unitList.length + 1,
         name,
         status,
+        createdAt: new Date().toISOString(),
+        createdBy: "Admin",
       };
       setUnitList([newUnit, ...unitList]);
       notify("success", "Unit added successfully!");
@@ -117,38 +122,33 @@ export default function UnitPage() {
 
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead>
+            <thead className="bg-slate-100">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Unit</th>
-                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Actions</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Unit</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Created At</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Created By</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody>
               {currentUnits.map((unit) => (
-                <tr key={unit.id} className="bg-white hover:bg-gray-50 rounded-2xl mb-2">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">{unit.name}</td>
-
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                <tr key={unit.id} className="mb-2 border-b border-slate-200">
+                  <td className="px-5 py-3 text-sm text-gray-800">{unit.name}</td>
+                  <td className="px-5 py-3 text-sm">
                     <Badge colorClass={statusStyles[unit.status]} icon={unit.status === "Active" ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
                       {unit.status}
                     </Badge>
                   </td>
-
-                  <td className="px-6 py-4 whitespace-nowrap text-right flex justify-end space-x-2">
-                    <button onClick={() => handleEditUnit(unit)} className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-gray-700">
-                      <Pencil size={16} />
+                  <td className="px-5 py-3 text-sm text-gray-700">{formatDate(unit.createdAt)}</td>
+                  <td className="px-5 py-3 text-sm text-gray-700">{unit.createdBy}</td>
+                  <td className="px-5 py-3 text-sm flex space-x-2">
+                    <button onClick={() => handleEditUnit(unit)} className="p-2 rounded-lg hover:bg-slate-200 text-gray-700">
+                      <EditIcon size={16} />
                     </button>
                   </td>
                 </tr>
               ))}
-              {currentUnits.length === 0 && (
-                <tr>
-                  <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">
-                    No units found.
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>

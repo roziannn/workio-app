@@ -72,12 +72,12 @@ export default function DataListHeader({ title, total, onAddNew, onImport, filte
       {/* buttons */}
       <div className="flex flex-col sm:flex-row sm:justify-end sm:space-x-2 space-y-2 sm:space-y-0 sm:w-1/3">
         {isBtnAddNew && onAddNew && (
-          <button onClick={onAddNew} className="w-full sm:w-auto px-3 py-2 sm:px-4 sm:py-2 rounded-lg bg-[#FF0B55] text-white text-sm font-medium hover:bg-[#e00a4c] transition">
+          <button onClick={onAddNew} className="w-full sm:w-auto px-3 py-2 sm:px-4 sm:py-2 rounded-lg bg-[#FF0B55] text-white text-xs font-medium hover:bg-[#e00a4c] transition">
             + Add New
           </button>
         )}
         {isBtnExport && onImport && (
-          <button onClick={onImport} className="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium">
+          <button onClick={onImport} className="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs font-medium">
             <Download className="h-4 w-4 mr-2" />
             Export
           </button>
