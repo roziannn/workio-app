@@ -20,9 +20,9 @@ export default function InputField({ label, value, onChange, placeholder, type =
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         readOnly={readonly}
-        className={`w-full p-2.5 border rounded-md text-gray-700 placeholder-gray-400 text-sm transition-colors duration-200 focus:outline-none 
-          ${error ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-red-500"} 
-          ${readonly ? "bg-slate-200 cursor-not-allowed" : "bg-white"}`}
+        className={`w-full p-2.5 border rounded-md text-gray-700 placeholder-gray-400 text-sm transition-colors duration-200 focus:outline-none
+          ${error ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-red-500"}
+          bg-white ${readonly ? "cursor-not-allowed" : ""}`}
       />
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>

@@ -6,10 +6,14 @@ import { Eye, CheckCircle2, XCircle, MoreHorizontal, Edit3 } from "lucide-react"
 import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 import Pagination from "@/components/Pagination";
-import { usersData } from "@/data/dummy/user";
+import LoadingSpinner from "@/components/Loading";
+
+import { getAllUsers } from "@/data/dummy/mappers/userMapper";
+import { UserData } from "@/data/dummy/user";
 
 export default function TeamsPage() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const personStatusStyles: Record<string, string> = {
     Active: "bg-green-100 text-green-700 border-green-500",
@@ -20,8 +24,10 @@ export default function TeamsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
 
-  const filteredPeople = usersData.filter((p) => {
+  const allUsers = getAllUsers();
+  const filteredPeople = allUsers.filter((p: UserData) => {
     const matchesStatus = statusFilter === "All" || p.status === statusFilter;
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.email.toLowerCase().includes(searchQuery.toLowerCase()) || p.unit.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
@@ -34,19 +40,14 @@ export default function TeamsPage() {
 
   const filterOptions = ["All", "Active", "Inactive"];
 
-  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
-
-  const handleAddNewClick = () => {
-    router.push("/teams/create");
+  const handleNavigation = (url: string) => {
+    setIsLoading(true);
+    setTimeout(() => {
+      router.push(url);
+    }, 500);
   };
 
-  const handleEditClick = (id: number) => {
-    router.push(`/teams/edit/${id}`);
-  };
-
-  const handleDetailClick = (id: number) => {
-    router.push(`/teams/detail/${id}`);
-  };
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -60,7 +61,7 @@ export default function TeamsPage() {
             setStatusFilter(value);
             setCurrentPage(1);
           }}
-          onAddNew={handleAddNewClick}
+          onAddNew={() => handleNavigation("/teams/create")}
           onImport={() => console.log("Import clicked")}
           onSearch={(query) => {
             setSearchQuery(query);
@@ -110,24 +111,12 @@ export default function TeamsPage() {
 
                     {openDropdown === person.id && (
                       <div className="absolute left-0 mt-2 w-28 bg-white border border-gray-200 rounded-lg shadow-sm z-10 flex flex-col">
-                        <button
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
-                          onClick={() => {
-                            handleEditClick(person.id);
-                            setOpenDropdown(null);
-                          }}
-                        >
+                        <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2" onClick={() => handleNavigation(`/teams/edit/${person.id}`)}>
                           <Edit3 size={14} />
                           <span className="ml-2">Edit</span>
                         </button>
 
-                        <button
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
-                          onClick={() => {
-                            handleDetailClick(person.id);
-                            setOpenDropdown(null);
-                          }}
-                        >
+                        <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2" onClick={() => handleNavigation(`/teams/detail/${person.id}`)}>
                           <Eye size={14} />
                           <span className="ml-2">Detail</span>
                         </button>

@@ -24,6 +24,7 @@ const mockDocument = {
 };
 
 export default function EditTaskPage() {
+  const [isLoading, setIsLoading] = useState(true);
   const [documentNo, setDocumentNo] = useState("");
   const [taskName, setTaskName] = useState("");
   const [project, setProject] = useState<number | null>(null);
@@ -34,7 +35,6 @@ export default function EditTaskPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [showReviewerSuggestions, setShowReviewerSuggestions] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // ⬅️ state loading
 
   const reviewerInputRef = useRef<HTMLInputElement>(null);
 
