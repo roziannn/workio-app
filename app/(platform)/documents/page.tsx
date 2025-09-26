@@ -93,9 +93,9 @@ export default function DocumentsPage() {
           <table className="min-w-full">
             <thead className="bg-slate-100">
               <tr>
-                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Doc. No</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Doc No</th>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Title</th>
-                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Project No.</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Project No</th>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
                 {/* <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Reviewer</th> */}
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">CreatedBy</th>
@@ -107,7 +107,7 @@ export default function DocumentsPage() {
               {currentDocuments.map((doc) => (
                 <tr key={doc.id} className="mb-2 border-b border-slate-200">
                   <td className="px-5 py-3 whitespace-nowrap text-sm text-gray-700">{doc.docNo}</td>
-                  <td className="px-5 py-3 whitespace-nowrap text-sm font-semibold text-gray-800">{doc.title}</td>
+                  <td className="px-5 py-3 whitespace-nowrap text-sm text-gray-800">{doc.title}</td>
                   <td className="px-5 py-3 whitespace-nowrap text-sm text-gray-700">{doc.project}</td>
                   <td className="px-5 py-3 whitespace-nowrap">
                     <Badge colorClass={statusStyles[doc.status]} icon={getStatusIcon(doc.status)}>

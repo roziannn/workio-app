@@ -30,8 +30,6 @@ export default function AuditTrailPage() {
   const indexOfFirst = indexOfLast - itemsPerPage;
   const currentAudits = filteredAudits.slice(indexOfFirst, indexOfLast);
 
-  const handleExport = () => setShowModal(true);
-
   const confirmExport = () => {
     setShowModal(false);
   };
@@ -42,7 +40,6 @@ export default function AuditTrailPage() {
         <DataListHeader
           title="Audit Trail"
           total={auditList.length}
-          onImport={handleExport}
           filterOptions={["All", "Success", "Failed"]}
           selectedFilter={statusFilter}
           onFilterChange={(val) => {

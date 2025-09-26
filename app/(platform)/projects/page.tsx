@@ -118,7 +118,7 @@ export default function ProjectsPage() {
             <thead className="bg-slate-100">
               <tr>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
-                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Project No.</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Project No</th>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Client</th>
                 {/* <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Budget</th> */}
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">DueDate</th>

@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Search, User, CheckCircle2, X, Flag } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { User, CheckCircle2, X, Flag } from "lucide-react";
 import { notify } from "@/components/NotifiactionManager";
 import InputField from "@/components/InputField";
 import Badge from "@/components/Badge";
-import { useParams, useRouter } from "next/navigation";
+import { getTaskById } from "@/data/dummy/mappers/tasksMapper";
 
-// Mock data for existing projects and team members
 const projects = [
   { id: 1, name: "Website Redesign" },
   { id: 2, name: "Mobile App Development" },
@@ -24,26 +24,14 @@ const assignees = [
   { id: 6, name: "Fiona Clark" },
 ];
 
-// Mock data for fetching a task by ID
-const mockTasks = [
-  { id: 1, taskName: "Install Figma on Windows Server", priority: "High", assignee: [1, 3], deadline: "2025-10-15", project: 1, notes: "Need to check server compatibility first." },
-  { id: 2, taskName: "Download RAM Upgrade to 1280MBps", priority: "Medium", assignee: [2], deadline: "2025-11-20", project: 2, notes: "Requires special driver installation." },
-  { id: 3, taskName: "Payment Settings for Kios Apps", priority: "Low", assignee: [4, 5, 6], deadline: "2025-12-01", project: 3, notes: "Finalize payment gateway integration." },
-];
-
-const fetchTaskById = (id: number) => {
-  return mockTasks.find((task) => task.id === id);
-};
-
 export default function DetailTaskPage() {
-  // Changed component name to TaskPage
   const router = useRouter();
   const params = useParams();
   const taskId = params.id ? parseInt(params.id as string, 10) : null;
   const isEditMode = taskId !== null && !isNaN(taskId);
 
   const [taskName, setTaskName] = useState("");
-  const [priority, setPriority] = useState("Medium");
+  const [priority, setPriority] = useState<"Low" | "Medium" | "High">("Medium");
   const [assignee, setAssignee] = useState<number[]>([]);
   const [deadline, setDeadline] = useState("");
   const [project, setProject] = useState<number | null>(null);
@@ -56,13 +44,13 @@ export default function DetailTaskPage() {
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  const priorityMap: { [key: number]: string } = {
+  const priorityMap: { [key: number]: "Low" | "Medium" | "High" } = {
     0: "Low",
     1: "Medium",
     2: "High",
   };
 
-  const priorityBadgeColors: { [key: string]: string } = {
+  const priorityBadgeColors: { [key in "Low" | "Medium" | "High"]: string } = {
     Low: "bg-purple-100 text-purple-600 border-purple-500",
     Medium: "bg-yellow-100 text-yellow-600 border-yellow-500",
     High: "bg-red-100 text-red-600 border-red-500",
@@ -71,6 +59,10 @@ export default function DetailTaskPage() {
   const handlePriorityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10);
     setPriority(priorityMap[value]);
+  };
+
+  const mapAssigneeNameToId = (names: string[]) => {
+    return assignees.filter((a) => names.includes(a.name)).map((a) => a.id);
   };
 
   const handleAssigneeChange = (memberId: number) => {
@@ -91,23 +83,11 @@ export default function DetailTaskPage() {
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    if (!taskName) {
-      errors.taskName = "Task name is required.";
-    }
-    if (assignee.length === 0) {
-      errors.assignee = "Please assign this task to at least one person.";
-    }
-    if (!deadline) {
-      errors.deadline = "A deadline is required.";
-    } else {
-      const today = new Date().toISOString().split("T")[0];
-      if (deadline < today) {
-        errors.deadline = "Deadline cannot be in the past.";
-      }
-    }
-    if (project === null) {
-      errors.project = "Please select a project.";
-    }
+    if (!taskName) errors.taskName = "Task name is required.";
+    if (assignee.length === 0) errors.assignee = "Please assign this task to at least one person.";
+    if (!deadline) errors.deadline = "A deadline is required.";
+    else if (deadline < new Date().toISOString().split("T")[0]) errors.deadline = "Deadline cannot be in the past.";
+    if (project === null) errors.project = "Please select a project.";
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -132,15 +112,14 @@ export default function DetailTaskPage() {
     router.push("/tasks");
   };
 
-  // Populate form fields if in edit mode
   useEffect(() => {
     if (isEditMode) {
-      const task = fetchTaskById(taskId!);
+      const task = getTaskById(taskId!);
       if (task) {
-        setTaskName(task.taskName);
+        setTaskName(task.title);
         setPriority(task.priority);
-        setAssignee(task.assignee);
-        setDeadline(task.deadline);
+        setAssignee(mapAssigneeNameToId(task.assignee));
+        setDeadline(task.dueDate);
         setProject(task.project);
         setNotes(task.notes);
       } else {
@@ -151,7 +130,6 @@ export default function DetailTaskPage() {
   }, [isEditMode, taskId, router]);
 
   const filteredProjects = projects.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
-
   const filteredAssignees = assignees.filter((member) => member.name.toLowerCase().includes(assigneeSearchQuery.toLowerCase()) && !assignee.includes(member.id));
 
   useEffect(() => {
@@ -161,14 +139,12 @@ export default function DetailTaskPage() {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      {/* Left: New Task Form */}
+      {/* Left: Task Form */}
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl space-y-6">
         <h2 className="text-xl font-semibold mb-2">{isEditMode ? "Edit Task" : "New Task"}</h2>
         <p className="text-gray-500 mb-6">{isEditMode ? "Edit the details of this task." : "Create a new task and assign it to a team member."}</p>
@@ -194,21 +170,21 @@ export default function DetailTaskPage() {
                 onChange={handlePriorityChange}
                 className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer range-thumb-red"
               />
-              <div className="absolute w-full flex justify-between mt-2 px-1">
-                <span className="text-xs text-gray-500">Low</span>
-                <span className="text-xs text-gray-500">Medium</span>
-                <span className="text-xs text-gray-500">High</span>
+              <div className="absolute w-full flex justify-between mt-2 px-1 text-xs text-gray-500">
+                <span>Low</span>
+                <span>Medium</span>
+                <span>High</span>
               </div>
             </div>
           </div>
 
-          {/* Multi-select Assignee field */}
+          {/* Multi-select Assignee */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Assign To</label>
-            <div className={`relative ${formErrors.assignee ? "border-red-500 rounded-lg" : ""}`} ref={assigneeInputRef}>
+            <div ref={assigneeInputRef} className={`relative ${formErrors.assignee ? "border-red-500 rounded-lg" : ""}`}>
               <div className={`flex flex-wrap items-center gap-2 p-2 border ${formErrors.assignee ? "border-red-500" : "border-gray-300"} rounded-lg bg-white`} onClick={() => setShowAssigneeSuggestions(true)}>
                 {assignee.map((memberId) => {
-                  const member = assignees.find((m) => m.id === memberId);
+                  const member = assignees.find((a) => a.id === memberId);
                   return (
                     <span key={member?.id} className="inline-flex items-center gap-1.5 px-3 py-1 text-sm font-medium text-indigo-800 bg-indigo-100 rounded-full">
                       <User size={12} className="mr-1" />
@@ -249,18 +225,15 @@ export default function DetailTaskPage() {
 
           <InputField label="Task Deadline" value={deadline} onChange={setDeadline} type="date" error={formErrors.deadline} />
 
-          {/* Textarea for Notes */}
+          {/* Notes */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Notes</label>
             <textarea
               value={notes}
-              onChange={(e) => {
-                setNotes(e.target.value);
-                setFormErrors((prev) => ({ ...prev, notes: "" }));
-              }}
+              onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              placeholder="Add any additional notes or details about the task."
-              className={`mt-1 w-full text-sm border px-3 py-2 rounded-lg focus:outline-none focus:border-red-500 ${formErrors.notes ? "border-red-500" : "border-gray-300"}`}
+              placeholder="Add any additional notes"
+              className={`mt-1 w-full text-sm border px-3 py-2 rounded-lg focus:outline-none ${formErrors.notes ? "border-red-500" : "border-gray-300"}`}
             />
             {formErrors.notes && <p className="text-red-500 text-xs mt-1">{formErrors.notes}</p>}
           </div>
@@ -271,10 +244,9 @@ export default function DetailTaskPage() {
         </form>
       </div>
 
-      {/* Right: Add to Project Form */}
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl">
         <h3 className="text-xl font-semibold mb-2">Add Task to Project</h3>
-        <p className="text-gray-500 mb-7">Select a project to add this new task to.</p>
+        <p className="text-gray-500 mb-7">Select a project to add this task to.</p>
 
         <div className="relative">
           <input
@@ -284,7 +256,9 @@ export default function DetailTaskPage() {
             placeholder="Search projects..."
             className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${formErrors.project ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-indigo-500"}`}
           />
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+            <CheckCircle2 size={16} />
+          </span>
         </div>
         {formErrors.project && <p className="text-red-500 text-xs mt-1">{formErrors.project}</p>}
 

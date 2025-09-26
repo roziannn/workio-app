@@ -4,8 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Box, ChevronDownCircle, ChevronRightCircle, FileText, ListCheck, LucideIcon, Shield } from "lucide-react";
-import { Home, Users, CheckSquare, Folder, BarChart2, BoxIcon, Settings, LogOut, Menu, X } from "lucide-react";
+import { Box, ChevronDownCircle, ChevronRightCircle, FileText, ListCheck, LucideIcon, PieChart, Shield, Home, Users, CheckSquare, Folder, BarChart2, BoxIcon, Settings, LogOut, Menu, X } from "lucide-react";
 
 interface NavItem {
   href?: string;
@@ -37,6 +36,7 @@ export default function Sidebar() {
     { href: "/tasks", label: "Tasks", icon: CheckSquare },
     { href: "/projects", label: "Projects", icon: Folder },
     { href: "/documents", label: "Documents", icon: FileText },
+    { href: "/report", label: "Report", icon: PieChart },
     { href: "/auditTrail", label: "AuditTrail", icon: BarChart2 },
   ];
 

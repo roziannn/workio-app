@@ -62,7 +62,6 @@ export default function TeamsPage() {
             setCurrentPage(1);
           }}
           onAddNew={() => handleNavigation("/teams/create")}
-          onImport={() => console.log("Import clicked")}
           onSearch={(query) => {
             setSearchQuery(query);
             setCurrentPage(1);

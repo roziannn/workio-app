@@ -6,22 +6,9 @@ import { notify } from "@/components/NotifiactionManager";
 import InputField from "@/components/InputField";
 import Badge from "@/components/Badge";
 import TextareaField from "@/components/TextareaField";
-
-const projects = [
-  { id: 1, name: "Website Redesign" },
-  { id: 2, name: "Mobile App Development" },
-  { id: 3, name: "Backend API Migration" },
-  { id: 4, name: "Marketing Campaign Launch" },
-];
-
-const assignees = [
-  { id: 1, name: "Alice Johnson" },
-  { id: 2, name: "Bob Smith" },
-  { id: 3, name: "Charlie Brown" },
-  { id: 4, name: "Diana Prince" },
-  { id: 5, name: "Edward Davis" },
-  { id: 6, name: "Fiona Clark" },
-];
+import Pagination from "@/components/Pagination";
+import { getAllUserLOV, UserLOV } from "@/data/dummy/mappers/userMapper";
+import { getActiveProjectLOV } from "@/data/dummy/mappers/projectsMapper";
 
 export default function NewTaskPage() {
   const [taskName, setTaskName] = useState("");
@@ -50,15 +37,19 @@ export default function NewTaskPage() {
     High: "bg-red-100 text-red-600 border-red-500",
   };
 
+  const allUsers: UserLOV[] = getAllUserLOV();
+  const activeProjects = getActiveProjectLOV();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
+
   const handlePriorityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10);
     setPriority(priorityMap[value]);
   };
 
   const handleAssigneeChange = (memberId: number) => {
-    if (formErrors.assignee) {
-      setFormErrors((prev) => ({ ...prev, assignee: "" }));
-    }
+    if (formErrors.assignee) setFormErrors((prev) => ({ ...prev, assignee: "" }));
     if (assignee.includes(memberId)) {
       setAssignee(assignee.filter((id) => id !== memberId));
     } else {
@@ -67,29 +58,18 @@ export default function NewTaskPage() {
     setAssigneeSearchQuery("");
   };
 
-  const handleRemoveAssignee = (memberId: number) => {
-    setAssignee(assignee.filter((id) => id !== memberId));
-  };
+  const handleRemoveAssignee = (memberId: number) => setAssignee(assignee.filter((id) => id !== memberId));
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    if (!taskName) {
-      errors.taskName = "Task name is required.";
-    }
-    if (assignee.length === 0) {
-      errors.assignee = "Please assign this task to at least one person.";
-    }
-    if (!deadline) {
-      errors.deadline = "A deadline is required.";
-    } else {
+    if (!taskName) errors.taskName = "Task name is required.";
+    if (assignee.length === 0) errors.assignee = "Please assign this task to at least one person.";
+    if (!deadline) errors.deadline = "A deadline is required.";
+    else {
       const today = new Date().toISOString().split("T")[0];
-      if (deadline < today) {
-        errors.deadline = "Deadline cannot be in the past.";
-      }
+      if (deadline < today) errors.deadline = "Deadline cannot be in the past.";
     }
-    if (project === null) {
-      errors.project = "Please select a project.";
-    }
+    if (project === null) errors.project = "Please select a project.";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -101,15 +81,6 @@ export default function NewTaskPage() {
       return;
     }
 
-    console.log({
-      taskName,
-      priority,
-      assignee,
-      deadline,
-      project,
-      notes,
-    });
-
     notify("success", "Task added successfully!");
     setTaskName("");
     setPriority("Medium");
@@ -120,9 +91,12 @@ export default function NewTaskPage() {
     setFormErrors({});
   };
 
-  const filteredProjects = projects.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredProjects = activeProjects.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  const filteredAssignees = assignees.filter((member) => member.name.toLowerCase().includes(assigneeSearchQuery.toLowerCase()) && !assignee.includes(member.id));
+  const totalPages = Math.ceil(filteredProjects.length / pageSize);
+  const paginatedProjects = filteredProjects.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const filteredAssignees = allUsers.filter((member) => member.name.toLowerCase().includes(assigneeSearchQuery.toLowerCase()) && !assignee.includes(member.id));
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -131,20 +105,17 @@ export default function NewTaskPage() {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      {/* Left: New Task Form */}
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl space-y-6">
         <h2 className="text-xl font-semibold mb-1">New Task</h2>
         <p className="text-sm text-gray-500 mb-6">Create a new task and assign it to a team member.</p>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <InputField label="Task Name" value={taskName} onChange={setTaskName} placeholder="e.g., Deploy new API endpoint" error={formErrors.taskName} />
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <span className="inline-flex items-center space-x-2">
@@ -172,13 +143,12 @@ export default function NewTaskPage() {
             </div>
           </div>
 
-          {/* Multi-select Assignee field */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Assign To</label>
             <div className={`relative ${formErrors.assignee ? "border-red-500 rounded-lg" : ""}`} ref={assigneeInputRef}>
               <div className={`flex flex-wrap items-center gap-2 p-2 border ${formErrors.assignee ? "border-red-500" : "border-gray-300"} rounded-lg bg-white`} onClick={() => assigneeInputRef.current?.focus()}>
                 {assignee.map((memberId) => {
-                  const member = assignees.find((m) => m.id === memberId);
+                  const member = allUsers.find((m) => m.id === memberId);
                   return (
                     <span key={member?.id} className="inline-flex items-center gap-1.5 px-3 py-1 text-sm font-medium text-indigo-800 bg-indigo-100 rounded-full">
                       <User size={12} className="mr-1" />
@@ -218,25 +188,13 @@ export default function NewTaskPage() {
           </div>
 
           <InputField label="Task Deadline" value={deadline} onChange={setDeadline} type="date" error={formErrors.deadline} />
-
-          <TextareaField
-            label="Notes"
-            value={notes}
-            onChange={(val) => {
-              setNotes(val);
-              setFormErrors((prev) => ({ ...prev, notes: "" }));
-            }}
-            placeholder="Add any additional notes or details about the task."
-            error={formErrors.notes}
-          />
-
+          <TextareaField label="Notes" value={notes} onChange={setNotes} placeholder="Add any additional notes or details about the task." error={formErrors.notes} />
           <button type="submit" className="btn-primary w-full">
             Save Task
           </button>
         </form>
       </div>
 
-      {/* Right: Add to Project Form */}
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl">
         <h3 className="text-xl font-semibold mb-2">Add Task to Project</h3>
         <p className="text-sm text-gray-500 mb-5">Select a project to add this new task to.</p>
@@ -245,16 +203,20 @@ export default function NewTaskPage() {
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder=""
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            placeholder="Search project..."
             className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${formErrors.project ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-indigo-500"}`}
           />
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         </div>
+
         {formErrors.project && <p className="text-red-500 text-xs mt-1">{formErrors.project}</p>}
 
         <div className="space-y-4 mt-6">
-          {filteredProjects.map((p) => (
+          {paginatedProjects.map((p) => (
             <div
               key={p.id}
               className={`flex items-center justify-between p-4 rounded-lg cursor-pointer transition-colors ${project === p.id ? "bg-indigo-100 border-indigo-500 border-2" : "bg-gray-50 hover:bg-gray-100 border border-transparent"}`}
@@ -268,6 +230,8 @@ export default function NewTaskPage() {
             </div>
           ))}
         </div>
+
+        {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
       </div>
     </div>
   );

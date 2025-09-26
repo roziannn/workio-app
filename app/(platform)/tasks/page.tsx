@@ -13,6 +13,7 @@ import { tasksData } from "@/data/dummy/tasks";
 
 export default function TasksPage() {
   const router = useRouter();
+  const [tasks, setTasks] = useState(tasksData);
   const [statusFilter, setStatusFilter] = useState("All");
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -41,7 +42,9 @@ export default function TasksPage() {
   };
 
   const handleArchiveTask = (id: number) => {
+    setTasks((prev) => prev.filter((t) => t.id !== id));
     notify("success", "Data archived successfully!");
+    handleCloseArchiveModal();
   };
 
   const priorityStyles: Record<string, string> = {
@@ -57,9 +60,9 @@ export default function TasksPage() {
 
   const filterOptions = ["All", "In Progress", "Completed"];
 
-  const filteredTasks = tasksData.filter((t) => {
+  const filteredTasks = tasks.filter((t) => {
     const matchStatus = statusFilter === "All" || t.status === statusFilter;
-    const matchSearch = t.title.toLowerCase().includes(searchText.toLowerCase()) || t.assignee.toLowerCase().includes(searchText.toLowerCase());
+    const matchSearch = t.title.toLowerCase().includes(searchText.toLowerCase()) || t.assignee.some((name) => name.toLowerCase().includes(searchText.toLowerCase()));
     return matchStatus && matchSearch;
   });
 
@@ -116,7 +119,7 @@ export default function TasksPage() {
                     </Badge>
                   </td>
                   <td className="px-5 py-4 text-sm text-gray-700 flex items-center gap-2">
-                    <User size={14} className="text-gray-500" /> {task.assignee}
+                    <User size={14} className="text-gray-500" /> {task.assignee.join(", ")}
                   </td>
                   <td className="px-5 py-4 relative">
                     <button className="p-2 rounded-lg hover:bg-slate-200 text-gray-700" onClick={() => setOpenDropdown(openDropdown === task.id ? null : task.id)}>
@@ -141,7 +144,7 @@ export default function TasksPage() {
                             setOpenDropdown(null);
                           }}
                         >
-                          <Archive size={14} />
+                          <Archive size={16} />
                           <span className="ml-2">Archive</span>
                         </button>
                       </div>
@@ -155,7 +158,6 @@ export default function TasksPage() {
 
         <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       </div>
-
       {isArchiveModalOpen && itemToArchive && <ModalArchive isOpen={isArchiveModalOpen} onClose={handleCloseArchiveModal} onArchive={handleArchiveTask} itemId={itemToArchive.id} itemName={itemToArchive.name} />}
     </div>
   );
