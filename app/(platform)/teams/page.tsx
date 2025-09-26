@@ -44,7 +44,7 @@ export default function TeamsPage() {
     setIsLoading(true);
     setTimeout(() => {
       router.push(url);
-    }, 500);
+    }, 300);
   };
 
   if (isLoading) return <LoadingSpinner />;

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { CheckCircle2, Clock, Flag, PlayCircle } from "lucide-react";
+import { Flag } from "lucide-react";
 import InputField from "@/components/InputField";
 import { formatDate } from "@/utils/dateHelper";
 import SkeletonEditForm from "@/components/Skeleton";
@@ -72,7 +72,6 @@ export default function DetailTeamPage() {
         <div className="bg-white p-6 rounded-3xl">
           <h3 className="text-xl font-semibold mb-1 flex items-center justify-between">Tasks In Progress</h3>
           <p className="text-sm text-gray-500 mb-6">View the tasks for this team member.</p>
-
           {team.tasks && team.tasks.length > 0 ? (
             <ul className="space-y-3">
               <ul className="space-y-3">

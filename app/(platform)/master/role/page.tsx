@@ -10,6 +10,7 @@ import ToggleSwitch from "@/components/Toggle";
 import Pagination from "@/components/Pagination";
 import { notify } from "@/components/NotifiactionManager";
 import { formatDate } from "@/utils/dateHelper";
+import { roles } from "@/data/dummy/mst_roles";
 
 interface Role {
   id: number;
@@ -19,17 +20,8 @@ interface Role {
   createdBy: string;
 }
 
-const initialRoles: Role[] = [
-  { id: 1, name: "Programmer", status: "Active", createdAt: "2025-01-01", createdBy: "System" },
-  { id: 2, name: "IT Lead", status: "Active", createdAt: "2025-02-01", createdBy: "System" },
-  { id: 3, name: "Developer", status: "Active", createdAt: "2025-03-01", createdBy: "System" },
-  { id: 5, name: "Senior Developer", status: "Active", createdAt: "2025-04-01", createdBy: "System" },
-  { id: 6, name: "Administrator", status: "Inactive", createdAt: "2025-05-01", createdBy: "System" },
-  { id: 7, name: "Architect/Designer", status: "Active", createdAt: "2025-06-01", createdBy: "System" },
-];
-
 export default function RolePage() {
-  const [roleList, setRoleList] = useState(initialRoles);
+  const [roleList, setRoleList] = useState<Role[]>(roles);
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("All");
 
@@ -86,6 +78,9 @@ export default function RolePage() {
       };
       setRoleList([newRole, ...roleList]);
       notify("success", "Role added successfully!");
+    } else if (modalMode === "edit" && editingRoleId !== null) {
+      setRoleList(roleList.map((r) => (r.id === editingRoleId ? { ...r, name, status } : r)));
+      notify("success", "Role updated successfully!");
     }
 
     resetForm();
@@ -125,8 +120,8 @@ export default function RolePage() {
               <tr>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Role Name</th>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Created At</th>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Created By</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Created At</th>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
@@ -139,8 +134,8 @@ export default function RolePage() {
                       {role.status}
                     </Badge>
                   </td>
-                  <td className="px-5 py-3 text-sm text-gray-700">{formatDate(role.createdAt)}</td>
                   <td className="px-5 py-3 text-sm text-gray-700">{role.createdBy}</td>
+                  <td className="px-5 py-3 text-sm text-gray-700">{formatDate(role.createdAt)}</td>
                   <td className="px-5 py-3 text-sm flex space-x-2">
                     <button onClick={() => handleEditRole(role)} className="p-2 rounded-lg hover:bg-slate-200 text-gray-700">
                       <EditIcon size={16} />
@@ -164,12 +159,10 @@ export default function RolePage() {
             title={modalMode === "add" ? "Add New Role" : "Edit Role"}
           >
             <InputField label="Role Name" value={name} onChange={setName} placeholder="Role Name" error={errors.name} />
-
             <div className="flex items-center justify-between mb-4">
               <span className="text-gray-700 text-sm font-medium">Status</span>
               <ToggleSwitch status={status} onChange={setStatus} activeColor="bg-green-500" />
             </div>
-
             <button onClick={handleSaveRole} className="btn-secondary">
               {modalMode === "add" ? "Add Role" : "Save Changes"}
             </button>

@@ -8,46 +8,17 @@ import InputField from "@/components/InputField";
 import { notify } from "@/components/NotifiactionManager";
 import { formatRupiah } from "@/utils/currency";
 import TextareaField from "@/components/TextareaField";
+import { categoryProjects, CategoryName } from "@/data/dummy/mst_categoryProjects";
+import { getProjectByProjectNo } from "@/data/dummy/mappers/projectsMapper";
+import LoadingSpinner from "@/components/Loading";
 
-type Category = "Web App" | "Mobile App" | "Internal Tool";
 type Priority = "High" | "Medium" | "Low";
 
-const categories = [
-  { id: "Web App", name: "Web App", icon: <Monitor size={16} className="text-indigo-500" /> },
-  { id: "Mobile App", name: "Mobile App", icon: <Smartphone size={16} className="text-green-500" /> },
-  { id: "Internal Tool", name: "Internal Tool", icon: <Wrench size={16} className="text-orange-500" /> },
-];
-
-const mockProjects = [
-  {
-    projectNo: "PRJ-WEB-202509-001",
-    name: "Customer Portal Revamp",
-    description: "Redesigning and rebuilding the user-facing customer portal with new features.",
-    owner: "Alice Johnson",
-    category: "Web App",
-    startDate: "2024-01-12",
-    endDate: "2024-03-12",
-    status: "Active",
-    client: "Global Solutions",
-    budget: 50000,
-    progress: 75,
-    priority: "High",
-  },
-  {
-    projectNo: "PRJ-MOB-202509-001",
-    name: "E-Commerce Mobile Shop",
-    description: "Developing a new mobile application for our e-commerce platform.",
-    owner: "Bob Smith",
-    category: "Mobile App",
-    startDate: "2024-02-01",
-    endDate: "2024-04-15",
-    status: "Inactive",
-    client: "Retail Innovations",
-    budget: 75000,
-    progress: 20,
-    priority: "Medium",
-  },
-];
+const iconMap: Record<string, React.ReactNode> = {
+  Monitor: <Monitor size={16} className="text-slate-500" />,
+  Smartphone: <Smartphone size={16} className="text-slate-500" />,
+  Wrench: <Wrench size={16} className="text-slate-500" />,
+};
 
 export default function EditProjectPage() {
   const router = useRouter();
@@ -62,7 +33,9 @@ export default function EditProjectPage() {
   const [budget, setBudget] = useState<number>(0);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [category, setCategory] = useState<Category | null>(null);
+
+  const [category, setCategory] = useState<CategoryName | null>(null);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
@@ -75,16 +48,16 @@ export default function EditProjectPage() {
   useEffect(() => {
     setIsLoading(true);
     setTimeout(() => {
-      const project = mockProjects.find((p) => p.projectNo === projectNo);
+      const project = getProjectByProjectNo(projectNo);
       if (project) {
         setName(project.name);
         setDescription(project.description);
         setClient(project.client);
-        setPriority(project.priority as Priority);
+        setPriority(project.priority);
         setBudget(project.budget);
         setStartDate(project.startDate);
         setEndDate(project.endDate);
-        setCategory(project.category as Category);
+        setCategory(project.category as CategoryName);
       } else {
         notify("error", "Project not found.");
         router.push("/projects");
@@ -109,33 +82,13 @@ export default function EditProjectPage() {
       notify("error", "Please fill in all required fields.");
       return;
     }
-    const updatedProject = {
-      projectNo,
-      name,
-      description,
-      client,
-      category,
-      priority,
-      budget,
-      startDate,
-      endDate,
-    };
-    console.log("Update Project:", updatedProject);
     notify("success", "Project updated successfully!");
     router.push("/projects");
   };
 
-  const filteredCategories = categories.filter((c) => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredCategories = categoryProjects.filter((c) => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center h-96">
-        <div className="flex flex-col items-center space-y-4 backdrop-blur-md animate-fadeIn">
-          <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-lg font-medium text-gray-700 animate-pulse">Loading data...</p>
-        </div>
-      </div>
-    );
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -156,7 +109,6 @@ export default function EditProjectPage() {
             placeholder="e.g., Website Redesign"
             error={formErrors.name}
           />
-
           <TextareaField
             label="Description"
             value={description}
@@ -164,10 +116,9 @@ export default function EditProjectPage() {
               setDescription(val);
               setFormErrors((prev) => ({ ...prev, description: "" }));
             }}
-            placeholder="Add any additional notes or details about the task."
-            error={formErrors.notes}
+            placeholder="Add any additional notes or details about the project."
+            error={formErrors.description}
           />
-
           <InputField
             label="Client"
             value={client}
@@ -178,7 +129,6 @@ export default function EditProjectPage() {
             placeholder="Client name"
             error={formErrors.client}
           />
-
           <InputField
             label="Budget"
             type="text"
@@ -224,8 +174,7 @@ export default function EditProjectPage() {
               <span>High</span>
             </div>
           </div>
-
-          <button type="submit" className="btn-primary w-full">
+          <button type="submit" className="btn-secondary w-full">
             Save Changes
           </button>
         </form>
@@ -234,7 +183,6 @@ export default function EditProjectPage() {
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl">
         <h3 className="text-xl font-semibold mb-1">Select Category</h3>
         <p className="text-sm text-gray-500 mb-7">Choose the most suitable category for this project.</p>
-
         <label>Search</label>
         <div className="relative mb-4">
           <input
@@ -246,23 +194,22 @@ export default function EditProjectPage() {
           />
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         </div>
-
         {formErrors.category && <p className="text-red-500 text-xs mt-1">{formErrors.category}</p>}
 
         <div className="space-y-4">
           {filteredCategories.map((c) => (
             <div
               key={c.id}
-              className={`flex items-center justify-between p-4 rounded-lg cursor-pointer transition-colors ${category === c.id ? "bg-indigo-100 border-indigo-500 border-2" : "bg-gray-50 hover:bg-gray-100 border border-transparent"}`}
+              className={`flex items-center justify-between p-4 rounded-lg cursor-pointer transition-colors ${category === c.name ? "bg-indigo-100 border-indigo-500 border-2" : "bg-gray-50 hover:bg-gray-100 border border-transparent"}`}
               onClick={() => {
-                setCategory(c.id as Category);
+                setCategory(c.name as CategoryName);
                 setFormErrors((prev) => ({ ...prev, category: "" }));
               }}
             >
               <span className="flex items-center gap-2 font-medium text-sm text-gray-800">
-                {c.icon} {c.name}
+                {iconMap[c.icon]} {c.name}
               </span>
-              {category === c.id && <CheckCircle2 size={20} className="text-indigo-600" />}
+              {category === c.name && <CheckCircle2 size={20} className="text-indigo-600" />}
             </div>
           ))}
         </div>

@@ -15,7 +15,7 @@ interface Project {
   name: string;
   description: string;
   owner: string;
-  category: "Web App" | "Mobile App" | "Internal Tool";
+  category: "Web Application" | "Mobile Application" | "Internal Tool";
   startDate: string;
   endDate: string;
   status: "Active" | "Inactive" | "Completed";
@@ -71,13 +71,13 @@ export default function ProjectsPage() {
 
   const getCategoryIcon = (category: Project["category"]) => {
     switch (category) {
-      case "Web App":
+      case "Web Application":
         return (
           <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100">
             <Monitor className="h-5 w-5 text-slate-500" />
           </div>
         );
-      case "Mobile App":
+      case "Mobile Application":
         return (
           <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100">
             <Smartphone className="h-5 w-5 text-slate-500" />

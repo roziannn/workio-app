@@ -4,7 +4,7 @@ export interface Project {
   name: string;
   description: string;
   createdBy: string;
-  category: "Web App" | "Mobile App" | "Internal Tool";
+  category: "Web Application" | "Mobile Application" | "Internal Tool";
   startDate: string;
   endDate: string;
   status: "Active" | "Inactive" | "Completed";
@@ -17,11 +17,11 @@ export interface Project {
 export const projectsData: Project[] = [
   {
     id: 1,
-    projectNo: "PRJ-WEB-202501-001",
+    projectNo: "WEB-202501-001",
     name: "Customer Portal Revamp",
     description: "Redesigning and rebuilding the user-facing customer portal with new features.",
     createdBy: "Firda Rosiana",
-    category: "Web App",
+    category: "Web Application",
     startDate: "2024-01-12",
     endDate: "2024-03-12",
     status: "Active",
@@ -32,11 +32,11 @@ export const projectsData: Project[] = [
   },
   {
     id: 2,
-    projectNo: "PRJ-MOB-202501-002",
+    projectNo: "MOB-202501-002",
     name: "E-Commerce Mobile Shop",
     description: "Developing a new mobile application for our e-commerce platform.",
     createdBy: "Andi Pratama",
-    category: "Mobile App",
+    category: "Mobile Application",
     startDate: "2024-02-01",
     endDate: "2024-04-15",
     status: "Inactive",
@@ -47,7 +47,7 @@ export const projectsData: Project[] = [
   },
   {
     id: 3,
-    projectNo: "PRJ-INT-202501-003",
+    projectNo: "INT-202501-003",
     name: "Design System Toolkit",
     description: "Creating a comprehensive design system for consistent UI/UX across all products.",
     createdBy: "Siti Aisyah",
@@ -62,11 +62,11 @@ export const projectsData: Project[] = [
   },
   {
     id: 4,
-    projectNo: "PRJ-WEB-202501-004",
+    projectNo: "WEB-202501-004",
     name: "Payment Gateway API",
     description: "Building a secure and scalable API for all payment transactions.",
     createdBy: "Budi Santoso",
-    category: "Web App",
+    category: "Web Application",
     startDate: "2024-03-05",
     endDate: "2024-06-10",
     status: "Active",
@@ -77,11 +77,11 @@ export const projectsData: Project[] = [
   },
   {
     id: 5,
-    projectNo: "PRJ-MOB-202501-005",
+    projectNo: "MOB-202501-005",
     name: "HR Mobile Attendance",
     description: "Building an HR mobile app for attendance and leave management.",
     createdBy: "Dewi Lestari",
-    category: "Mobile App",
+    category: "Mobile Application",
     startDate: "2024-03-12",
     endDate: "2024-07-01",
     status: "Active",
@@ -92,7 +92,7 @@ export const projectsData: Project[] = [
   },
   {
     id: 25,
-    projectNo: "PRJ-INT-202501-025",
+    projectNo: "INT-202501-025",
     name: "Asset Management Tool",
     description: "Developing an internal tool to track company assets and inventory.",
     createdBy: "Nina Puspita",
@@ -108,11 +108,11 @@ export const projectsData: Project[] = [
 
   {
     id: 26,
-    projectNo: "PRJ-WEB-202501-026",
+    projectNo: "WEB-202501-026",
     name: "Analytics Dashboard",
     description: "Building a real-time analytics dashboard for business intelligence.",
     createdBy: "Rizky Hidayat",
-    category: "Web App",
+    category: "Web Application",
     startDate: "2024-04-01",
     endDate: "2024-06-30",
     status: "Active",
@@ -123,11 +123,11 @@ export const projectsData: Project[] = [
   },
   {
     id: 27,
-    projectNo: "PRJ-MOB-202501-027",
+    projectNo: "MOB-202501-027",
     name: "Food Delivery App",
     description: "Developing a mobile app for food delivery services with tracking.",
     createdBy: "Ahmad Fauzi",
-    category: "Mobile App",
+    category: "Mobile Application",
     startDate: "2024-05-10",
     endDate: "2024-08-15",
     status: "Inactive",
@@ -138,7 +138,7 @@ export const projectsData: Project[] = [
   },
   {
     id: 28,
-    projectNo: "PRJ-INT-202501-028",
+    projectNo: "INT-202501-028",
     name: "Knowledge Base System",
     description: "An internal system for managing company knowledge and documentation.",
     createdBy: "Lina Marlina",
@@ -153,11 +153,11 @@ export const projectsData: Project[] = [
   },
   {
     id: 29,
-    projectNo: "PRJ-WEB-202501-029",
+    projectNo: "WEB-202501-029",
     name: "Online Learning Platform",
     description: "Creating a platform for online learning with video and assessments.",
     createdBy: "Tono Subagyo",
-    category: "Web App",
+    category: "Web Application",
     startDate: "2024-06-15",
     endDate: "2024-10-01",
     status: "Completed",
@@ -168,11 +168,11 @@ export const projectsData: Project[] = [
   },
   {
     id: 30,
-    projectNo: "PRJ-MOB-202501-030",
+    projectNo: "MOB-202501-030",
     name: "Fitness Tracker App",
     description: "Mobile app for tracking workouts, diet, and health progress.",
     createdBy: "Maya Sari",
-    category: "Mobile App",
+    category: "Mobile Application",
     startDate: "2024-07-01",
     endDate: "2024-10-30",
     status: "Active",
@@ -183,7 +183,7 @@ export const projectsData: Project[] = [
   },
   {
     id: 31,
-    projectNo: "PRJ-INT-202501-031",
+    projectNo: "INT-202501-031",
     name: "Expense Management System",
     description: "Tool to manage and track company expenses across departments.",
     createdBy: "Agus Saputra",
@@ -198,11 +198,11 @@ export const projectsData: Project[] = [
   },
   {
     id: 32,
-    projectNo: "PRJ-WEB-202501-032",
+    projectNo: "WEB-202501-032",
     name: "Hospital Appointment System",
     description: "Web app for booking and managing hospital appointments.",
     createdBy: "Intan Pertiwi",
-    category: "Web App",
+    category: "Web Application",
     startDate: "2024-08-01",
     endDate: "2024-11-01",
     status: "Active",
@@ -213,11 +213,11 @@ export const projectsData: Project[] = [
   },
   {
     id: 33,
-    projectNo: "PRJ-MOB-202501-033",
+    projectNo: "MOB-202501-033",
     name: "Ride Sharing App",
     description: "Mobile app to connect drivers and passengers for ride sharing.",
     createdBy: "Rudi Hartono",
-    category: "Mobile App",
+    category: "Mobile Application",
     startDate: "2024-08-12",
     endDate: "2024-12-20",
     status: "Completed",
@@ -228,7 +228,7 @@ export const projectsData: Project[] = [
   },
   {
     id: 34,
-    projectNo: "PRJ-INT-202501-034",
+    projectNo: "INT-202501-034",
     name: "Employee Onboarding Portal",
     description: "Internal portal to streamline the employee onboarding process.",
     createdBy: "Putri Amelia",
@@ -243,11 +243,11 @@ export const projectsData: Project[] = [
   },
   {
     id: 35,
-    projectNo: "PRJ-WEB-202501-035",
+    projectNo: "WEB-202501-035",
     name: "Real Estate Listing Platform",
     description: "Web platform for browsing and managing real estate properties.",
     createdBy: "Yusuf Maulana",
-    category: "Web App",
+    category: "Web Application",
     startDate: "2024-09-15",
     endDate: "2025-01-15",
     status: "Inactive",

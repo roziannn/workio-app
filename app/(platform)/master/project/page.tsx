@@ -1,32 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import { CheckCircle2, XCircle, EditIcon } from "lucide-react";
 import DataListHeader from "@/components/DataListHeader";
 import Pagination from "@/components/Pagination";
 import Modal from "@/components/Modal";
 import InputField from "@/components/InputField";
 import InputLabel from "@/components/Label";
 import ToggleSwitch from "@/components/Toggle";
-import CategoryTable from "../project/project-table";
+import Badge from "@/components/Badge";
+import { formatDate } from "@/utils/dateHelper";
 import { notify } from "@/components/NotifiactionManager";
+import { categoryProjects } from "@/data/dummy/mst_categoryProjects";
 
-interface Category {
+export interface Category {
   id: number;
   name: string;
   status: "Active" | "Inactive";
   icon: "Monitor" | "Smartphone" | "Wrench";
   createdAt: string;
+  createdBy: string;
 }
 
-const categories: Category[] = [
-  { id: 1, name: "Web App", status: "Active", icon: "Monitor", createdAt: "2025-01-01" },
-  { id: 2, name: "Mobile App", status: "Active", icon: "Smartphone", createdAt: "2025-02-01" },
-  { id: 3, name: "Internal Tool", status: "Inactive", icon: "Wrench", createdAt: "2025-03-01" },
-];
-const iconOptions: Category["icon"][] = ["Monitor", "Smartphone", "Wrench"];
-
 export default function ProjectCategoryPage() {
-  const [categoryList, setCategoryList] = useState<Category[]>(categories);
+  const [categoryList, setCategoryList] = useState<Category[]>(categoryProjects);
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("All");
 
@@ -39,6 +36,7 @@ export default function ProjectCategoryPage() {
   const [icon, setIcon] = useState<"" | Category["icon"]>("");
   const [errors, setErrors] = useState<{ name?: string; icon?: string }>({});
 
+  const iconOptions: Category["icon"][] = ["Monitor", "Smartphone", "Wrench"];
   const itemsPerPage = 5;
   const filterOptions = ["All", "Active", "Inactive"];
   const filteredCategories = statusFilter === "All" ? categoryList : categoryList.filter((c) => c.status === statusFilter);
@@ -76,7 +74,6 @@ export default function ProjectCategoryPage() {
     }
 
     const validIcon = icon as Category["icon"];
-
     if (modalMode === "add") {
       const newCategory: Category = {
         id: categoryList.length + 1,
@@ -84,6 +81,7 @@ export default function ProjectCategoryPage() {
         status,
         icon: validIcon,
         createdAt: new Date().toISOString(),
+        createdBy: "System",
       };
       setCategoryList([newCategory, ...categoryList]);
       notify("success", "Project Category added successfully!");
@@ -91,7 +89,6 @@ export default function ProjectCategoryPage() {
       setCategoryList(categoryList.map((c) => (c.id === editingCategoryId ? { ...c, name, status, icon: validIcon } : c)));
       notify("success", "Project Category updated successfully!");
     }
-
     resetForm();
     setShowModal(false);
   };
@@ -124,10 +121,58 @@ export default function ProjectCategoryPage() {
           }}
         />
 
-        <CategoryTable categories={currentCategories} statusStyles={statusStyles} onEdit={handleEditCategory} />
+        {/* TABLE */}
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead className="bg-slate-100">
+              <tr>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Category</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Icon</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Created By</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Created At</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentCategories.map((category) => (
+                <tr key={category.id} className="mb-2 border-b border-slate-200">
+                  <td className="px-5 py-3 whitespace-nowrap text-sm text-gray-800">{category.name}</td>
+                  <td className="px-5 py-3 whitespace-nowrap">
+                    <Badge colorClass={statusStyles[category.status]} icon={category.status === "Active" ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}>
+                      {category.status}
+                    </Badge>
+                  </td>
+                  <td className="px-5 py-3 whitespace-nowrap">
+                    <p className="text-sm text-gray-700">{category.icon}</p>
+                  </td>
+                  <td className="px-5 py-3 whitespace-nowrap">
+                    <p className="text-sm text-gray-700">{category.createdBy}</p>
+                  </td>
+                  <td className="px-5 py-3 whitespace-nowrap">
+                    <p className="text-sm text-gray-700">{formatDate(category.createdAt)}</p>
+                  </td>
+                  <td className="px-5 py-3 whitespace-nowrap flex space-x-2">
+                    <button className="p-2 rounded-lg hover:bg-slate-200 text-gray-700" onClick={() => handleEditCategory(category)}>
+                      <EditIcon size={16} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {currentCategories.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-5 py-3 text-center text-sm text-gray-500">
+                    No categories found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
         <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
 
+        {/* MODAL */}
         {showModal && (
           <Modal
             isOpen={showModal}

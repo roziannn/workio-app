@@ -8,15 +8,22 @@ import InputField from "@/components/InputField";
 import { notify } from "@/components/NotifiactionManager";
 import { formatRupiah } from "@/utils/currency";
 import { generateProjectNo } from "@/utils/projectNo";
+import { mst_categoryProjects, categoryProjects } from "@/data/dummy/mst_categoryProjects";
 
-type Category = "Web App" | "Mobile App" | "Internal Tool";
+type Category = (typeof mst_categoryProjects)[number];
 type Priority = "High" | "Medium" | "Low";
 
-const categories = [
-  { id: "Web App", name: "Web App", icon: <Monitor size={16} className="text-indigo-500" /> },
-  { id: "Mobile App", name: "Mobile App", icon: <Smartphone size={16} className="text-green-500" /> },
-  { id: "Internal Tool", name: "Internal Tool", icon: <Wrench size={16} className="text-orange-500" /> },
-];
+const iconMap: Record<"Monitor" | "Smartphone" | "Wrench", React.ReactNode> = {
+  Monitor: <Monitor size={16} className="text-slate-500" />,
+  Smartphone: <Smartphone size={16} className="text-slate-500" />,
+  Wrench: <Wrench size={16} className="text-slate-500" />,
+};
+
+const categories = categoryProjects.map((cat) => ({
+  id: cat.name,
+  name: cat.name,
+  icon: iconMap[cat.icon],
+}));
 
 export default function CreateProjectPage() {
   const router = useRouter();
@@ -39,7 +46,6 @@ export default function CreateProjectPage() {
     Low: "bg-green-100 text-green-700 border-green-500",
   };
 
-  // generate projectNo whenever category changes
   useEffect(() => {
     if (category) {
       const newProjectNo = generateProjectNo(category, 1);
@@ -52,7 +58,10 @@ export default function CreateProjectPage() {
     if (!name.trim()) errors.name = "Project name is required.";
     if (!description.trim()) errors.description = "Description is required.";
     if (!client.trim()) errors.client = "Client name is required.";
+    if (!budget.trim()) errors.budget = "Budget value is required.";
     if (!category) errors.category = "Please select a category.";
+    if (!startDate) errors.startDate = "Please select a start date.";
+    if (!endDate) errors.endDate = "Please select a end date.";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -152,13 +161,12 @@ export default function CreateProjectPage() {
             </div>
           </div>
 
-          <button type="submit" className="btn-primary w-full">
+          <button type="submit" className="btn-secondary w-full">
             Save Project
           </button>
         </form>
       </div>
 
-      {/* Right: Select Category */}
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl">
         <h3 className="text-xl font-semibold mb-1">Select Category</h3>
         <p className="text-sm text-gray-500 mb-7">Choose the most suitable category for this project.</p>

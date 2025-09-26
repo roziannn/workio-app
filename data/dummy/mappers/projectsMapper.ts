@@ -3,8 +3,8 @@ import { projectsData, Project } from "../projects";
 // LOV project active
 export const getActiveProjectLOV = () => projectsData.filter((p) => p.status === "Active").map((p) => ({ id: p.id, name: p.name }));
 
-// buat detail
-export const getProjectById = (id: number): Project | undefined => projectsData.find((p) => p.id === id);
+// detail by projectNo
+export const getProjectByProjectNo = (projectNo: string): Project | undefined => projectsData.find((p) => p.projectNo === projectNo);
 
 // buat list/table
 export const getAllProjects = (): Project[] => projectsData;

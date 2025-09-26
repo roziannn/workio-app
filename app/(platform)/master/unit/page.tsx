@@ -10,6 +10,7 @@ import ToggleSwitch from "@/components/Toggle";
 import Pagination from "@/components/Pagination";
 import { notify } from "@/components/NotifiactionManager";
 import { formatDate } from "@/utils/dateHelper";
+import { units } from "@/data/dummy/mst_units";
 
 interface Unit {
   id: number;
@@ -19,15 +20,9 @@ interface Unit {
   createdBy: string;
 }
 
-const initialUnits: Unit[] = [
-  { id: 1, name: "Frontend Developer", status: "Active", createdAt: "2025-01-01", createdBy: "System" },
-  { id: 2, name: "Backend Developer", status: "Active", createdAt: "2025-02-01", createdBy: "System" },
-  { id: 3, name: "UI/UX Designer", status: "Inactive", createdAt: "2025-03-01", createdBy: "System" },
-  { id: 4, name: "QA Engineer", status: "Active", createdAt: "2025-04-01", createdBy: "System" },
-];
-
 export default function UnitPage() {
-  const [unitList, setUnitList] = useState<Unit[]>(initialUnits);
+  const [unitList, setUnitList] = useState<Unit[]>(units);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("All");
 
@@ -39,7 +34,7 @@ export default function UnitPage() {
   const [status, setStatus] = useState<Unit["status"]>("Active");
   const [errors, setErrors] = useState<{ name?: string }>({});
 
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
   const filterOptions = ["All", "Active", "Inactive"];
   const filteredUnits = statusFilter === "All" ? unitList : unitList.filter((u) => u.status === statusFilter);
 
@@ -80,7 +75,7 @@ export default function UnitPage() {
         name,
         status,
         createdAt: new Date().toISOString(),
-        createdBy: "Admin",
+        createdBy: "System Workio",
       };
       setUnitList([newUnit, ...unitList]);
       notify("success", "Unit added successfully!");
@@ -126,8 +121,8 @@ export default function UnitPage() {
               <tr>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Unit</th>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Created At</th>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Created By</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Created At</th>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
@@ -140,8 +135,8 @@ export default function UnitPage() {
                       {unit.status}
                     </Badge>
                   </td>
-                  <td className="px-5 py-3 text-sm text-gray-700">{formatDate(unit.createdAt)}</td>
                   <td className="px-5 py-3 text-sm text-gray-700">{unit.createdBy}</td>
+                  <td className="px-5 py-3 text-sm text-gray-700">{formatDate(unit.createdAt)}</td>
                   <td className="px-5 py-3 text-sm flex space-x-2">
                     <button onClick={() => handleEditUnit(unit)} className="p-2 rounded-lg hover:bg-slate-200 text-gray-700">
                       <EditIcon size={16} />

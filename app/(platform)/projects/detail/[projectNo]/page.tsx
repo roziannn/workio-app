@@ -6,59 +6,24 @@ import { Monitor, Smartphone, Wrench, CheckCircle2, XCircle, Flag } from "lucide
 import Badge from "@/components/Badge";
 import { formatDate } from "@/utils/dateHelper";
 import { notify } from "@/components/NotifiactionManager";
-
-type Category = "Web App" | "Mobile App" | "Internal Tool";
-type Priority = "High" | "Medium" | "Low";
-type Status = "Active" | "Inactive" | "Completed";
-
-interface Project {
-  id: number;
-  projectNo: string;
-  name: string;
-  description: string;
-  owner: string;
-  category: Category;
-  startDate: string;
-  endDate: string;
-  status: Status;
-  client: string;
-  budget: number;
-  progress: number;
-  priority: Priority;
-}
+import { getProjectByProjectNo } from "@/data/dummy/mappers/projectsMapper";
+import type { Project } from "@/data/dummy/projects";
+import LoadingSpinner from "@/components/Loading";
 
 interface Document {
   id: number;
   name: string;
   type: string;
-  status: Status;
+  status: "Active" | "Inactive" | "Completed";
   date: string;
 }
 
 interface Task {
   id: number;
   title: string;
-  status: Status;
+  status: "Active" | "Inactive" | "Completed";
   date: string;
 }
-
-const mockProjects: Project[] = [
-  {
-    id: 1,
-    projectNo: "PRJ-WEB-202501-001",
-    name: "Customer Portal Revamp",
-    description: "Redesigning and rebuilding the user-facing customer portal with new features.",
-    owner: "Alice Johnson",
-    category: "Web App",
-    startDate: "2024-01-12",
-    endDate: "2024-03-12",
-    status: "Active",
-    client: "Global Solutions",
-    budget: 50000,
-    progress: 75,
-    priority: "High",
-  },
-];
 
 const mockTasks: Task[] = [
   { id: 1, title: "Initial planning", status: "Completed", date: "2024-01-12" },
@@ -83,35 +48,24 @@ export default function ProjectDetailPage() {
 
   useEffect(() => {
     setIsLoading(true);
-    setTimeout(() => {
-      const p = mockProjects.find((proj) => proj.projectNo === projectNo);
-      if (!p) {
-        notify("error", "Project not found.");
-        router.push("/projects");
-      } else {
-        setProject(p);
-      }
-      setIsLoading(false);
-    }, 500);
+    const p = getProjectByProjectNo(projectNo);
+    if (!p) {
+      notify("error", "Project not found.");
+      router.push("/projects");
+    } else {
+      setProject(p);
+    }
+    setIsLoading(false);
   }, [projectNo, router]);
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center h-96">
-        <div className="flex flex-col items-center space-y-4 backdrop-blur-md animate-fadeIn">
-          <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-lg font-medium text-gray-700 animate-pulse">Loading data...</p>
-        </div>
-      </div>
-    );
-
+  if (isLoading) return <LoadingSpinner />;
   if (!project) return null;
 
-  const getCategoryIcon = (category: Category) => {
+  const getCategoryIcon = (category: Project["category"]) => {
     switch (category) {
-      case "Web App":
+      case "Web Application":
         return <Monitor className="h-5 w-5 text-blue-600" />;
-      case "Mobile App":
+      case "Mobile Application":
         return <Smartphone className="h-5 w-5 text-yellow-600" />;
       case "Internal Tool":
         return <Wrench className="h-5 w-5 text-purple-600" />;
@@ -120,13 +74,13 @@ export default function ProjectDetailPage() {
     }
   };
 
-  const statusStyles: Record<Status, string> = {
+  const statusStyles: Record<Project["status"], string> = {
     Active: "bg-green-100 text-green-700 border-green-500",
     Inactive: "bg-red-100 text-red-700 border-red-500",
     Completed: "bg-blue-100 text-blue-700 border-blue-500",
   };
 
-  const priorityStyles: Record<Priority, string> = {
+  const priorityStyles: Record<Project["priority"], string> = {
     High: "bg-red-100 text-red-700 border-red-500",
     Medium: "bg-yellow-100 text-yellow-700 border-yellow-500",
     Low: "bg-green-100 text-green-700 border-green-500",
@@ -134,7 +88,7 @@ export default function ProjectDetailPage() {
 
   return (
     <div className="min-h-screen bg-white rounded-3xl p-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center mb-6">
         <div className="flex items-center space-x-4">
           <div className="p-4 rounded-full bg-gray-100">{getCategoryIcon(project.category)}</div>
           <div>
@@ -142,10 +96,6 @@ export default function ProjectDetailPage() {
             <p className="text-sm text-gray-500">{project.projectNo}</p>
           </div>
         </div>
-
-        <button onClick={() => router.push("/projects")} className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition">
-          Back
-        </button>
       </div>
 
       <div className="w-full mb-8">
@@ -163,7 +113,7 @@ export default function ProjectDetailPage() {
         <div>
           {[
             { label: "Client", value: project.client },
-            { label: "Owner", value: project.owner },
+            { label: "CreatedBy", value: project.createdBy },
             { label: "Category", value: project.category },
             {
               label: "Priority",
@@ -173,14 +123,13 @@ export default function ProjectDetailPage() {
                 </Badge>
               ),
             },
-          ].map((item, index) => (
-            <div key={index} className="flex justify-between items-center p-3">
+          ].map((item, idx) => (
+            <div key={idx} className="flex justify-between items-center p-3">
               <span className="font-medium">{item.label}</span>
               <span className="text-gray-700">{item.value}</span>
             </div>
           ))}
         </div>
-
         <div>
           {[
             {
@@ -194,8 +143,8 @@ export default function ProjectDetailPage() {
             { label: "Budget", value: project.budget.toLocaleString("id-ID", { style: "currency", currency: "IDR" }) },
             { label: "Start Date", value: formatDate(project.startDate) },
             { label: "End Date", value: formatDate(project.endDate) },
-          ].map((item, index) => (
-            <div key={index} className="flex justify-between items-center p-3">
+          ].map((item, idx) => (
+            <div key={idx} className="flex justify-between items-center p-3">
               <span className="font-medium">{item.label}</span>
               <div className="flex items-center">{item.value}</div>
             </div>
@@ -203,23 +152,21 @@ export default function ProjectDetailPage() {
         </div>
       </div>
 
-      {/* Description */}
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-800 mb-2">Description</h2>
         <p className="text-gray-700">{project.description}</p>
       </div>
 
-      {/* Task History */}
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-800 mb-3">Task History</h2>
         <ul className="space-y-2">
           {mockTasks.map((task) => (
-            <li key={task.id} className="flex justify-between items-center p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition">
-              <span>{task.title}</span>
+            <li key={task.id} className="flex justify-between items-center p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 transition">
+              <p className="text-sm">{task.title}</p>
               <div className="flex items-center space-x-2">
-                {task.status === "Active" && <CheckCircle2 className="text-green-600" />}
-                {task.status === "Inactive" && <XCircle className="text-red-600" />}
-                {task.status === "Completed" && <Flag className="text-blue-600" />}
+                {task.status === "Active" && <CheckCircle2 size={16} className="text-green-600" />}
+                {task.status === "Inactive" && <XCircle size={16} className="text-red-600" />}
+                {task.status === "Completed" && <Flag size={16} className="text-blue-600" />}
                 <span className="text-sm text-slate-600">{formatDate(task.date)}</span>
               </div>
             </li>
@@ -231,15 +178,15 @@ export default function ProjectDetailPage() {
         <h2 className="text-lg font-semibold text-gray-800 mb-3">Documents Related</h2>
         <ul className="space-y-2">
           {mockDocuments.map((doc) => (
-            <li key={doc.id} className="flex justify-between items-center p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition">
+            <li key={doc.id} className="flex justify-between items-center p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 transition">
               <div className="flex flex-col">
-                <span className="mb-1">{doc.name}</span>
+                <p className="text-sm mb-1">{doc.name}</p>
                 <span className="text-sm font-medium text-slate-500">{doc.type}</span>
               </div>
               <div className="flex items-center space-x-2">
-                {doc.status === "Active" && <CheckCircle2 className="text-green-600" />}
-                {doc.status === "Inactive" && <XCircle className="text-red-600" />}
-                {doc.status === "Completed" && <Flag className="text-blue-600" />}
+                {doc.status === "Active" && <CheckCircle2 size={16} className="text-green-600" />}
+                {doc.status === "Inactive" && <XCircle size={16} className="text-red-600" />}
+                {doc.status === "Completed" && <Flag size={16} className="text-blue-600" />}
                 <span className="text-sm text-slate-600">{formatDate(doc.date)}</span>
               </div>
             </li>
