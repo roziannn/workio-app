@@ -41,7 +41,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
             })}
           </nav>
 
-          <div className="flex items-center space-x-3">
+          <div className="items-center space-x-3 hidden md:flex">
             <span className="text-slate-900 font-medium">Firda Rosiana</span>
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-200">
               <Link href="/profile" className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-200 hover:bg-slate-300 transition">

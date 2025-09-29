@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Box, ChevronDownCircle, ChevronRightCircle, FileText, ListCheck, LucideIcon, PieChart, Shield, Home, Users, CheckSquare, Folder, BarChart2, BoxIcon, Settings, LogOut, Menu, X } from "lucide-react";
+import { Box, ChevronDownCircle, ChevronRightCircle, FileText, ListCheck, LucideIcon, PieChart, Shield, Home, Users, CheckSquare, Folder, BarChart2, BoxIcon, Settings, LogOut, Menu, X, User } from "lucide-react";
 
 interface NavItem {
   href?: string;
@@ -129,8 +129,23 @@ export default function Sidebar() {
         </button>
       </div>
 
-      <nav role="navigation" aria-hidden={!open} className={`md:hidden fixed inset-0 z-40 bg-white overflow-y-auto transition-all ${open ? "block pt-16" : "hidden"}`}>
-        <div className="px-4 py-6 space-y-2">{[...links, ...others].map(renderLink)}</div>
+      <nav role="navigation" aria-hidden={!open} className={`md:hidden fixed inset-0 z-40 bg-white overflow-y-auto ${open ? "block" : "hidden"}`} style={{ paddingTop: topOffset }}>
+        <div className="px-4 py-6 space-y-6">
+          <Link href="/profile" className="block mb-3">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-gray-100">
+              <div className="w-12 h-12 flex-shrink-0 rounded-full bg-slate-200 flex items-center justify-center">
+                <User className="w-6 h-6 text-gray-700" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-slate-900 font-semibold text-base">Firda Rosiana</span>
+                <span className="text-gray-700 text-sm">Software Developer</span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Menu Links */}
+          <div className="space-y-2">{[...links, ...others].map(renderLink)}</div>
+        </div>
       </nav>
 
       {/* DESKTOP SIDEBAR */}
