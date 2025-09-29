@@ -13,18 +13,8 @@ import CommentDrawer from "./comment-drawer";
 import HistoryList from "./history-list";
 import LoadingSpinner from "@/components/Loading";
 
-type Status = "Active" | "Inactive" | "Completed";
-
-interface Document {
-  id: number;
-  documentNo: string;
-  title: string;
-  projectNo: string;
-  reviewer: string;
-  notes: string;
-  status: Status;
-  createdAt: string;
-}
+import { getDocumentByDocNo } from "@/data/dummy/mappers/documentMapper";
+import { Document } from "@/data/dummy/documents";
 
 interface History {
   id: number;
@@ -34,30 +24,6 @@ interface History {
   fileUrl: string;
   documentNo: string;
 }
-
-const mockDocuments: Document[] = [
-  {
-    id: 1,
-    documentNo: "DOC-2025-001",
-    title: "Project Brief",
-    projectNo: "PRJ-WEB-202509-001",
-    reviewer: "Alice",
-    notes:
-      "This document outlines the key objectives, scope, and deliverables of the project. It highlights critical dependencies, resource allocations, and identified risks that must be addressed to ensure successful implementation. All teams are expected to review and align on the outlined requirements prior to the next development sprint.",
-    status: "Active",
-    createdAt: "2025-09-18",
-  },
-  {
-    id: 2,
-    documentNo: "DOC-2025-002",
-    title: "Contract Client",
-    projectNo: "PRJ-MOB-202509-001",
-    reviewer: "Charlie",
-    notes: "Legal review required",
-    status: "Completed",
-    createdAt: "2025-09-16",
-  },
-];
 
 const mockHistories: History[] = [
   {
@@ -95,9 +61,7 @@ export default function DocumentDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-
   const [isCommentOpen, setIsCommentOpen] = useState(false);
-
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [newVersion, setNewVersion] = useState("");
   const [newFile, setNewFile] = useState<File | null>(null);
@@ -105,7 +69,7 @@ export default function DocumentDetailPage() {
   useEffect(() => {
     setIsLoading(true);
     setTimeout(() => {
-      const doc = mockDocuments.find((d) => d.documentNo === documentNo);
+      const doc = getDocumentByDocNo(documentNo);
       if (!doc) {
         notify("error", "Document not found.");
         router.push("/documents");
@@ -113,7 +77,7 @@ export default function DocumentDetailPage() {
         setDocument(doc);
       }
       setIsLoading(false);
-    }, 500);
+    }, 300);
   }, [documentNo, router]);
 
   const handleUploadVersion = () => {
@@ -132,13 +96,13 @@ export default function DocumentDetailPage() {
   };
 
   if (isLoading) return <LoadingSpinner />;
-
   if (!document) return null;
 
-  const statusStyles: Record<Status, string> = {
-    Active: "bg-green-100 text-green-700 border-green-500",
-    Inactive: "bg-red-100 text-red-700 border-red-500",
-    Completed: "bg-blue-100 text-blue-700 border-blue-500",
+  const statusStyles: Record<Document["status"], string> = {
+    Draft: "bg-gray-100 text-gray-700 border-gray-500",
+    Submitted: "bg-yellow-100 text-yellow-700 border-yellow-500",
+    Approved: "bg-green-100 text-green-700 border-green-500",
+    Rejected: "bg-red-100 text-red-700 border-red-500",
   };
 
   return (
@@ -150,7 +114,7 @@ export default function DocumentDetailPage() {
           </div>
           <div>
             <h1 className="text-xl font-semibold text-gray-800">{document.title}</h1>
-            <p className="text-sm text-gray-500">{document.documentNo}</p>
+            <p className="text-sm text-gray-500">{document.docNo}</p>
           </div>
         </div>
       </div>
@@ -160,10 +124,10 @@ export default function DocumentDetailPage() {
         <div>
           {[
             {
-              label: "CreatedBy",
+              label: "Created By",
               value: (
                 <span className="flex items-center">
-                  <User size={14} className="mr-1" /> {document.reviewer}
+                  <User size={14} className="mr-1" /> {document.createdBy}
                 </span>
               ),
             },
@@ -172,8 +136,8 @@ export default function DocumentDetailPage() {
               value: (
                 <span className="flex items-center">
                   <Folder size={14} className="mr-1 text-slate-500" />
-                  <Link href={`/projects/detail/${document?.projectNo}`} className="font-semibold text-indigo-500 hover:text-indigo-700 hover:underline">
-                    {document?.projectNo}
+                  <Link href={`/projects/detail/${document.projectNo}`} className="font-semibold text-indigo-500 hover:text-indigo-700 hover:underline">
+                    {document.projectNo}
                   </Link>
                 </span>
               ),
@@ -203,7 +167,7 @@ export default function DocumentDetailPage() {
 
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-800 mb-3">History</h2>
-        <HistoryList documentNo={document.documentNo} histories={mockHistories} />
+        <HistoryList documentNo={document.docNo} histories={mockHistories} />
       </div>
 
       <div className="flex justify-end space-x-3">
@@ -218,7 +182,7 @@ export default function DocumentDetailPage() {
         </button>
       </div>
 
-      <CommentDrawer isOpen={isCommentOpen} documentNo={document.documentNo} onClose={() => setIsCommentOpen(false)} />
+      <CommentDrawer isOpen={isCommentOpen} documentNo={document.docNo} onClose={() => setIsCommentOpen(false)} />
 
       <Modal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} title="Upload New Version">
         <div className="space-y-3">
@@ -231,10 +195,8 @@ export default function DocumentDetailPage() {
                 type="file"
                 onChange={(e) => setUploadedFile(e.target.files?.[0] || null)}
                 className={`
-                  w-full pl-10 pr-4 py-1 border border-gray-300 rounded-lg 
-                  focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent
-                  file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
-                  file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700
+                  w-full pl-10 pr-4 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent
+                  file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700
                   hover:file:bg-blue-100 text-sm text-gray-500 mb-2
                 `}
               />

@@ -1,57 +1,68 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Search, CheckCircle2, Paperclip, User, X } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { CheckCircle2, Paperclip, User, X, Search } from "lucide-react";
+
 import { notify } from "@/components/NotifiactionManager";
 import InputField from "@/components/InputField";
 import TextareaField from "@/components/TextareaField";
-import { usersData } from "@/data/dummy/user";
 import LoadingSpinner from "@/components/Loading";
+import Pagination from "@/components/Pagination";
 
-const projects = [
-  { id: 1, name: "Website Redesign" },
-  { id: 2, name: "Mobile App Development" },
-  { id: 3, name: "Backend API Migration" },
-  { id: 4, name: "Marketing Campaign Launch" },
-];
+import { usersData } from "@/data/dummy/user";
+import { getActiveProjectLOV } from "@/data/dummy/mappers/projectsMapper";
+import { getDocumentByDocNo } from "@/data/dummy/mappers/documentMapper";
 
-const mockDocument = {
-  documentNo: "DOC-2025-001",
-  taskName: "Fix API response bug",
-  project: 2,
-  reviewers: [1],
-  notes: "Priority: high, fix before deployment",
-};
+export default function EditDocumentPage() {
+  const router = useRouter();
+  const params = useParams();
+  const docNo = params.documentNo as string;
 
-export default function EditTaskPage() {
   const [isLoading, setIsLoading] = useState(true);
-  const [documentNo, setDocumentNo] = useState("");
-  const [taskName, setTaskName] = useState("");
-  const [project, setProject] = useState<number | null>(null);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+
+  const [title, setTitle] = useState("");
+  const [notes, setNotes] = useState("");
+  const [projectNo, setProjectNo] = useState<string | null>(null);
   const [reviewers, setReviewers] = useState<number[]>([]);
   const [reviewerSearchQuery, setReviewerSearchQuery] = useState("");
-  const [notes, setNotes] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [showReviewerSuggestions, setShowReviewerSuggestions] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
+
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const reviewerInputRef = useRef<HTMLInputElement>(null);
 
+  const activeProjects = getActiveProjectLOV();
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDocumentNo(mockDocument.documentNo);
-      setTaskName(mockDocument.taskName);
-      setProject(mockDocument.project);
-      setReviewers(mockDocument.reviewers);
-      setNotes(mockDocument.notes);
-      setIsLoading(false);
-    }, 500);
+    setIsLoading(true);
+    const doc = getDocumentByDocNo(docNo);
+    if (doc) {
+      setTitle(doc.title || "");
+      setNotes(doc.notes || "");
+      setProjectNo(doc.projectNo);
 
-    return () => clearTimeout(timer);
-  }, []);
+      const reviewerIds: number[] = [];
+      if (doc.reviewer) {
+        const found = usersData.find((u) => u.name.toLowerCase() === doc.reviewer?.toLowerCase());
+        if (found) reviewerIds.push(found.id);
+      }
+      setReviewers(reviewerIds);
+    } else {
+      notify("error", "Document not found");
+      router.push("/documents");
+    }
+    setIsLoading(false);
+  }, [docNo, router]);
 
-  const filteredProjects = projects.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredProjects = activeProjects.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const totalPages = Math.ceil(filteredProjects.length / pageSize);
+  const paginatedProjects = filteredProjects.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   const filteredReviewers = usersData.filter((r) => r.name.toLowerCase().includes(reviewerSearchQuery.toLowerCase()) && !reviewers.includes(r.id));
 
   const handleReviewerChange = (id: number) => {
@@ -67,9 +78,9 @@ export default function EditTaskPage() {
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    if (!taskName) errors.taskName = "Document name is required.";
-    if (reviewers.length === 0) errors.reviewer = "At least 1 reviewer is required.";
-    if (project === null) errors.project = "Please select a project.";
+    if (!title.trim()) errors.title = "Title is required";
+    if (!projectNo) errors.project = "Please select a project";
+    if (reviewers.length === 0) errors.reviewer = "At least 1 reviewer is required";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -81,21 +92,29 @@ export default function EditTaskPage() {
       return;
     }
     notify("success", "Document updated successfully!");
+    router.push("/documents");
   };
 
   if (isLoading) return <LoadingSpinner />;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl space-y-6">
         <h2 className="text-xl font-semibold mb-1">Edit Document</h2>
         <p className="text-sm text-gray-500 mb-6">Update the document details below.</p>
-
         <form onSubmit={handleSubmit} className="space-y-6">
-          <InputField label="Document Number" value={documentNo} onChange={() => {}} type="text" readonly />
+          <InputField label="Document Number" value={docNo} onChange={() => {}} type="text" readonly />
+          <InputField
+            label="Title"
+            value={title}
+            onChange={(val) => {
+              setTitle(val);
+              setFormErrors((prev) => ({ ...prev, title: "" }));
+            }}
+            placeholder="e.g., File Design System"
+            error={formErrors.title}
+          />
 
-          <InputField label="Title" value={taskName} onChange={setTaskName} placeholder="e.g., File Design System" error={formErrors.taskName} />
-
-          {/* Upload file */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Upload a file</label>
             <div className="relative flex items-center">
@@ -108,11 +127,10 @@ export default function EditTaskPage() {
             </div>
           </div>
 
-          {/* Reviewer */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Reviewer</label>
             <div className={`relative ${formErrors.reviewer ? "border-red-500 rounded-lg" : ""}`} ref={reviewerInputRef}>
-              <div className={`flex flex-wrap items-center gap-2 p-2 border ${formErrors.reviewer ? "border-red-500" : "border-gray-300"} rounded-lg bg-white`} onClick={() => reviewerInputRef.current?.focus()}>
+              <div className={`flex flex-wrap items-center gap-2 p-2 border ${formErrors.reviewer ? "border-red-500" : "border-gray-300"} rounded-lg bg-white`}>
                 {reviewers.map((id) => {
                   const member = usersData.find((r) => r.id === id);
                   return (
@@ -125,7 +143,6 @@ export default function EditTaskPage() {
                     </span>
                   );
                 })}
-
                 {reviewers.length < 2 && (
                   <input
                     type="text"
@@ -133,18 +150,17 @@ export default function EditTaskPage() {
                     onChange={(e) => setReviewerSearchQuery(e.target.value)}
                     onFocus={() => setShowReviewerSuggestions(true)}
                     placeholder={reviewers.length === 0 ? "e.g., John Doe" : ""}
-                    className="flex-grow min-w-[5rem] bg-transparent focus:outline-none"
+                    className="flex-grow min-w-[5rem] bg-transparent focus:outline-none text-sm"
                   />
                 )}
               </div>
-
               {showReviewerSuggestions && reviewers.length < 2 && (
                 <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                   {filteredReviewers.length > 0 ? (
                     filteredReviewers.map((member) => (
                       <div key={member.id} className="flex items-center p-3 cursor-pointer hover:bg-gray-100" onClick={() => handleReviewerChange(member.id)}>
                         <User size={16} className="text-gray-500 mr-2" />
-                        <span className="font-medium">{member.name}</span>
+                        <span className="text-sm font-medium">{member.name}</span>
                       </div>
                     ))
                   ) : (
@@ -166,44 +182,48 @@ export default function EditTaskPage() {
             placeholder="Add any additional notes or details about the document."
             error={formErrors.notes}
           />
+
           <button type="submit" className="btn-secondary w-full">
             Save Changes
           </button>
         </form>
       </div>
 
-      {/* Change project */}
       <div className="lg:col-span-6 bg-white p-6 rounded-3xl">
         <h3 className="text-xl font-semibold mb-2">Change Project</h3>
-        <p className="text-sm text-gray-500 mb-5">Select a new project if needed.</p>
-        <label className="mb-1">Search</label>
-        <div className="relative">
+        <p className="text-sm text-gray-500 mb-5">Select a project to assign this document to.</p>
+        <div className="relative mb-3">
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search project..."
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            placeholder="Search projects..."
             className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${formErrors.project ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-indigo-500"}`}
           />
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         </div>
         {formErrors.project && <p className="text-red-500 text-xs mt-1">{formErrors.project}</p>}
-
-        <div className="space-y-4 mt-6">
-          {filteredProjects.map((p) => (
+        <div className="space-y-4">
+          {paginatedProjects.map((p) => (
             <div
-              key={p.id}
-              className={`flex items-center justify-between p-4 rounded-lg cursor-pointer transition-colors ${project === p.id ? "bg-indigo-100 border-indigo-500 border-2" : "bg-gray-50 hover:bg-gray-100 border border-transparent"}`}
+              key={p.projectNo}
+              className={`flex items-center justify-between p-4 rounded-lg cursor-pointer transition-colors ${
+                projectNo === p.projectNo ? "bg-indigo-100 border-indigo-500 border-2" : "bg-gray-50 hover:bg-gray-100 border border-transparent"
+              }`}
               onClick={() => {
-                setProject(p.id);
+                setProjectNo(p.projectNo);
                 setFormErrors((prev) => ({ ...prev, project: "" }));
               }}
             >
               <span className="font-medium text-sm text-gray-800">{p.name}</span>
-              {project === p.id && <CheckCircle2 size={20} className="text-indigo-600" />}
+              {projectNo === p.projectNo && <CheckCircle2 size={20} className="text-indigo-600" />}
             </div>
           ))}
         </div>
+        {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
       </div>
     </div>
   );

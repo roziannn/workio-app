@@ -8,7 +8,7 @@ import DataListHeader from "@/components/DataListHeader";
 import Badge from "@/components/Badge";
 import Pagination from "@/components/Pagination";
 import { formatDate } from "@/utils/dateHelper";
-import { documentsData, Document } from "./data";
+import { documentsData, Document } from "@/data/dummy/documents";
 
 export default function DocumentsPage() {
   const router = useRouter();
@@ -33,7 +33,7 @@ export default function DocumentsPage() {
     const matchesSearch =
       doc.docNo.toLowerCase().includes(searchText.toLowerCase()) ||
       doc.title.toLowerCase().includes(searchText.toLowerCase()) ||
-      doc.project.toLowerCase().includes(searchText.toLowerCase()) ||
+      doc.projectNo.toLowerCase().includes(searchText.toLowerCase()) ||
       doc.createdBy.toLowerCase().includes(searchText.toLowerCase()) ||
       (doc.reviewer && doc.reviewer.toLowerCase().includes(searchText.toLowerCase()));
 
@@ -108,7 +108,7 @@ export default function DocumentsPage() {
                 <tr key={doc.id} className="mb-2 border-b border-slate-200">
                   <td className="px-5 py-3 whitespace-nowrap text-sm text-gray-700">{doc.docNo}</td>
                   <td className="px-5 py-3 whitespace-nowrap text-sm text-gray-800">{doc.title}</td>
-                  <td className="px-5 py-3 whitespace-nowrap text-sm text-gray-700">{doc.project}</td>
+                  <td className="px-5 py-3 whitespace-nowrap text-sm text-gray-700">{doc.projectNo}</td>
                   <td className="px-5 py-3 whitespace-nowrap">
                     <Badge colorClass={statusStyles[doc.status]} icon={getStatusIcon(doc.status)}>
                       {doc.status}

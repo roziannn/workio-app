@@ -1,7 +1,7 @@
 import { projectsData, Project } from "../projects";
 
 // LOV project active
-export const getActiveProjectLOV = () => projectsData.filter((p) => p.status === "Active").map((p) => ({ id: p.id, name: p.name }));
+export const getActiveProjectLOV = () => projectsData.filter((p) => p.status === "Active").map((p) => ({ id: p.id, name: p.name, projectNo: p.projectNo }));
 
 // detail by projectNo
 export const getProjectByProjectNo = (projectNo: string): Project | undefined => projectsData.find((p) => p.projectNo === projectNo);
