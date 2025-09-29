@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -20,13 +20,16 @@ export default function Sidebar() {
 
   const toggleSidebar = () => setOpen(!open);
 
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   const links: NavItem[] = [
     { href: "/overview", label: "Overview", icon: Home },
     {
       label: "Master",
       icon: BoxIcon,
       children: [
-        // { href: "/master/account", label: "Account", icon: User },
         { href: "/master/project", label: "Project", icon: ListCheck },
         { href: "/master/unit", label: "Unit", icon: Box },
         { href: "/master/role", label: "Role", icon: Shield },
@@ -46,13 +49,10 @@ export default function Sidebar() {
   ];
 
   const renderLink = (item: NavItem) => {
-    // using startsWith untuk memeriksa kecocokan URL
     const isActive = item.href && pathname.startsWith(item.href);
 
     if (item.children) {
       const isSubOpen = openSubmenu === item.label;
-
-      // cek if salah satu child aktif, open submenu secara otomatis
       const isAnyChildActive = item.children.some((child) => child.href && pathname.startsWith(child.href));
 
       return (
