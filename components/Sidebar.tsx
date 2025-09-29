@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -18,11 +18,43 @@ export default function Sidebar() {
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const pathname = usePathname();
 
-  const toggleSidebar = () => setOpen(!open);
+  const topbarRef = useRef<HTMLDivElement | null>(null);
+  const [topOffset, setTopOffset] = useState<number>(0);
 
+  const toggleSidebar = () => setOpen((v) => !v);
+
+  // close sidebar when route changes (navigasi selesai)
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+
+  // measure topbar height so the fixed mobile menu sits right below it
+  useEffect(() => {
+    const measure = () => {
+      if (topbarRef.current) {
+        setTopOffset(topbarRef.current.offsetHeight || 0);
+      } else {
+        setTopOffset(0);
+      }
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  // prevent body scroll when mobile menu open
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = prev || "";
+    }
+    return () => {
+      document.body.style.overflow = prev || "";
+    };
+  }, [open]);
 
   const links: NavItem[] = [
     { href: "/overview", label: "Overview", icon: Home },
@@ -66,6 +98,7 @@ export default function Sidebar() {
             </div>
             {isSubOpen || isAnyChildActive ? <ChevronDownCircle size={16} /> : <ChevronRightCircle size={16} />}
           </button>
+
           {(isSubOpen || isAnyChildActive) && (
             <div className="pl-8 mt-2 space-y-2">
               {item.children!.map((child) => (
@@ -88,16 +121,17 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* MOBILE TOPBAR */}
-      <div className="md:hidden sticky top-0 z-50 bg-white shadow flex justify-between items-center px-4 py-3">
+      {/* MOBILE TOPBAR*/}
+      <div ref={topbarRef} className="md:hidden sticky top-0 z-50 bg-white shadow flex justify-between items-center px-4 py-3">
         <Image src="/logo.png" alt="Workio Logo" width={90} height={90} />
         <button onClick={toggleSidebar} className="p-2 rounded-full hover:bg-gray-100 transition">
           {open ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
-      {/* MOBILE DROPDOWN */}
-      {open && <nav className="md:hidden bg-white px-4 py-3 space-y-2 shadow">{[...links, ...others].map(renderLink)}</nav>}
+      <nav role="navigation" aria-hidden={!open} className={`md:hidden fixed inset-0 z-40 bg-white overflow-y-auto transition-all ${open ? "block pt-16" : "hidden"}`}>
+        <div className="px-4 py-6 space-y-2">{[...links, ...others].map(renderLink)}</div>
+      </nav>
 
       {/* DESKTOP SIDEBAR */}
       <aside className="hidden md:flex md:flex-col md:w-60 md:h-screen md:sticky md:top-0 bg-white p-5 custom-scroll">
